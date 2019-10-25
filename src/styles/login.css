@@ -1,0 +1,13 @@
+#form {
+    padding: 10px;
+}
+
+body, html, #root, #root>div, .row {
+    height: 100%;
+}
+
+#form-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
