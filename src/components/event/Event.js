@@ -7,6 +7,7 @@ import Table from 'react-bootstrap/Table';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import dummyEvents from '../../static/dummyEvents';
+import Header from "../shared/Header";
 
 class Event extends React.Component {
   state = {
@@ -109,50 +110,56 @@ class Event extends React.Component {
   render() {
     const { event } = this.state;
     return (
-      <Container>
-        <Row>
-          <Col sm={4}>
-            <h4>{event.title}</h4>
-          </Col>
-          <Col>
-            <Button>
-              rsvp
-            </Button>
-          </Col>
-        </Row>
-        <br></br>
-        <Row>
-          <Image id="eventPhoto" src='https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg' thumbnail />
-        </Row>
-        <Row>
-          <p>{event.description}</p>
-        </Row>
-        <Row>
-          <h5>Attending</h5>
-        </Row>
-        <Row id="textAlignedCentre" >
-          {this.getAttendents()}
-        </Row>
-        <Row>
-          <h5>Discussions</h5>
-        </Row>
-        <Row id="textAlignedCentre" >
-          {this.getDiscussions()}
-        </Row>
-        <Row>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Comment:
-            <br></br>
-            <textarea value={this.state.comment} onChange={this.handleChange} />
-          </label>
-          <br></br>
-          <Button type="submit">
-            Add Comment
-          </Button>
-        </form>
-        </Row>
-      </Container>
+      <div>
+          <div>
+              <Header/>
+          </div>
+          <Container>
+              <Row>
+                  <Col sm={4}>
+                      <h4>{event.title}</h4>
+                  </Col>
+                  <Col>
+                      <Button>
+                          rsvp
+                      </Button>
+                  </Col>
+              </Row>
+              <br></br>
+              <Row>
+                  <Image id="eventPhoto" src='https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg' thumbnail />
+              </Row>
+              <Row>
+                  <p>{event.description}</p>
+              </Row>
+              <Row>
+                  <h5>Attending</h5>
+              </Row>
+              <Row id="textAlignedCentre" >
+                  {this.getAttendents()}
+              </Row>
+              <Row>
+                  <h5>Discussions</h5>
+              </Row>
+              <Row id="textAlignedCentre" >
+                  {this.getDiscussions()}
+              </Row>
+              <Row>
+                  <form onSubmit={this.handleSubmit}>
+                      <label>
+                          Comment:
+                          <br></br>
+                          <textarea value={this.state.comment} onChange={this.handleChange} />
+                      </label>
+                      <br></br>
+                      <Button type="submit">
+                          Add Comment
+                      </Button>
+                  </form>
+              </Row>
+          </Container>
+      </div>
+
     )
 
   }

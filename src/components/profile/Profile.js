@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/profile.css';
 import { default as dummyUsers } from '../../static/dummyUsers.js';
+import Header from "../shared/Header";
 
 class Profile extends React.Component {
     render() {
@@ -31,6 +32,9 @@ class Profile extends React.Component {
 
         return (
             <div>
+                <div>
+                    <Header/>
+                </div>
               <Container>
                 <Row>
                   <Col xs={3} id='profile-info'>

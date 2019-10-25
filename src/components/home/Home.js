@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import dummyEvents from '../../static/dummyEvents';
 import TextField from '@material-ui/core/TextField';
+import Header from "../shared/Header";
 
 
 class Home extends React.Component {
@@ -171,47 +172,52 @@ class Home extends React.Component {
     const { showEvents, openNewEventForm } = this.state;
 
     return (
-      <Container>
-        <Row>
-          <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Add a new event</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>{this.getNewEventForm()}</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={this.handleNewEventClose}>
-                Close
-          </Button>
-              <Button variant="primary" onClick={this.handleNewEventSave}>
-                Add
-          </Button>
-            </Modal.Footer>
-          </Modal>
-        </Row>
-        <Row>
-          <Col sm={4}>
-            <div>
-              <Button
-                onClick={this.handleEventToggle}
-              >Show Events</Button>
+      <div>
+        <div>
+          <Header/>
+        </div>
+        <Container>
+          <Row>
+            <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>Add a new event</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>{this.getNewEventForm()}</Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={this.handleNewEventClose}>
+                  Close
+                </Button>
+                <Button variant="primary" onClick={this.handleNewEventSave}>
+                  Add
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </Row>
+          <Row>
+            <Col sm={4}>
               <div>
-                {showEvents && this.getEventTable()}
+                <Button
+                    onClick={this.handleEventToggle}
+                >Show Events</Button>
+                <div>
+                  {showEvents && this.getEventTable()}
+                </div>
               </div>
-            </div>
-          </Col>
-          <Col sm={8}>
-            <Row>
-              {this.getMap()}
-            </Row>
-            <Row>
-              <Button
-                variant="success"
-                onClick={this.handleAddNewEvent}
-              >Add Event</Button>
-            </Row>
-          </Col>
-        </Row>
-      </Container>
+            </Col>
+            <Col sm={8}>
+              <Row>
+                {this.getMap()}
+              </Row>
+              <Row>
+                <Button
+                    variant="success"
+                    onClick={this.handleAddNewEvent}
+                >Add Event</Button>
+              </Row>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     )
   }
 }
