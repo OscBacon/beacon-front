@@ -1,0 +1,7 @@
+$body-bg: #FFE8E5;
+$body-color: scale-color(#DA291C, $lightness: -60%);
+$white: #FFE8E5;
+$primary: #0554A6;
+$danger: #DA291C;
+
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";

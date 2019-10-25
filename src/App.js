@@ -1,7 +1,8 @@
 import React from 'react';
 import { Route, Switch, BrowserRouter } from 'react-router-dom';
 import './styles/App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/custom.scss';
 
 import Dashboard from './Dashboard';
 import Event from './components/event/Event';
