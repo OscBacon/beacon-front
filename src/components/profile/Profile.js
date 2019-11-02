@@ -12,7 +12,6 @@ import TextField from '@material-ui/core/TextField';
 
 import '../../styles/profile.css';
 import dummyUsers from '../../static/dummyUsers.js';
-import Header from "../shared/Header";
 
 class Profile extends React.Component {
   state = {
