@@ -208,12 +208,10 @@ class Home extends React.Component {
               <Row>
                 {this.getMap()}
               </Row>
-              <Row>
                 <Button
                     variant="success"
                     onClick={this.handleAddNewEvent}
                 >Add Event</Button>
-              </Row>
             </Col>
           </Row>
         </Container>
