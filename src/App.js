@@ -16,12 +16,8 @@ function App() {
     <div>
       <BrowserRouter>
         <Switch>
-          <Route exact path='/login' component={Login}/>
-          {/* <Route exact path='/' component={Dashboard}/> */}
-          <Route path='/event' component={Event}/>
-          <Route exact path='/home' component={Home}/>
-          <Route exact path='/profile' component={Profile}/>
-          <Route exact path='/admin' component={Admin}/>
+          <Route path='/login' component={Login}/>
+          <Route path='/' component={Dashboard}/>
         </Switch>
       </BrowserRouter>
     </div>

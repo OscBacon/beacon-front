@@ -1,27 +1,46 @@
-import React from 'react';
-import { Route, Switch, BrowserRouter } from 'react-router-dom';
+import React, { Component, Fragment } from 'react';
+import {Redirect, Route, Switch} from 'react-router-dom';
 
 import Home from './components/home/Home';
 import Profile from './components/profile/Profile';
 import Admin from './components/admin/Admin';
 import Event from './components/event/Event';
+import Header from "./components/shared/Header";
 
-class Dashboard extends React.Component {
-    render() {
+// path={`${match.url}app`}
+
+class Dashboard extends Component {
+    render(){
+
+        //TODO uncomment to enforce that the user is logged in before having access to below router
+
+        // if (!window.auth) {
+        //     return <Redirect to={'/login'}/>
+        // }
+
         return (
-            <React.Fragment>
-                <BrowserRouter>
+            <Fragment>
+                <div id="app-main" className="app-main">
+                    <div>
+                        <Header/>
+                    </div>
                     <Switch>
-                        <Route exact path='/home' component={Home}/>
-                        <Route exact path='/profile' component={Profile}/>
-                        <Route exact path='/admin' component={Admin}/>
                         <Route path='/event' component={Event}/>
-                    </Switch>
-                </BrowserRouter>
-            </React.Fragment>
-        )
-    }
+                        <Route path='/home' component={Home}/>
+                        <Route path='/profile' component={Profile}/>
+                        <Route path='/admin' component={Admin}/>
+                        {window.auth === "admin" ?
+                            <Route path='/' component={Admin}/>
+                            :
+                            <Route path='/' component={Home}/>
+                        }
 
+                    </Switch>
+                </div>
+            </Fragment>
+        );
+
+    }
 }
 
 export default Dashboard;

@@ -173,9 +173,6 @@ class Home extends React.Component {
 
     return (
       <div>
-        <div>
-          <Header/>
-        </div>
         <Container>
           <Row>
             <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>
@@ -208,12 +205,10 @@ class Home extends React.Component {
               <Row>
                 {this.getMap()}
               </Row>
-              <Row>
                 <Button
                     variant="success"
                     onClick={this.handleAddNewEvent}
                 >Add Event</Button>
-              </Row>
             </Col>
           </Row>
         </Container>
