@@ -111,9 +111,6 @@ class Event extends React.Component {
     const { event } = this.state;
     return (
       <div>
-          <div>
-              <Header/>
-          </div>
           <Container>
               <Row>
                   <Col sm={4}>

@@ -173,9 +173,6 @@ class Home extends React.Component {
 
     return (
       <div>
-        <div>
-          <Header/>
-        </div>
         <Container>
           <Row>
             <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>

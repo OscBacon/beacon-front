@@ -32,9 +32,6 @@ class Profile extends React.Component {
 
     return (
       <div>
-        <div>
-          <Header />
-        </div>
         <Container>
           <Row>
             <Col xs={3} id='profile-info'>

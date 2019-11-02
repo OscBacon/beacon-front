@@ -22,6 +22,9 @@ class Admin extends React.Component {
     }
 
     componentDidMount() {
+
+        // fetch data here
+
         this.setState({data: [
                 {title: "Users Online",  figure: "1"},
                 {title: "Total Users",  figure: "4"},
@@ -45,9 +48,6 @@ class Admin extends React.Component {
 
         return (
             <div>
-                <div>
-                    <Header/>
-                </div>
                 <div className="h-100 w-100">
                     <div className="w-75 mr-auto ml-auto">
                         <div className="w-100 text-center">
