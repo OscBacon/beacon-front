@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { Redirect } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row';
@@ -12,7 +11,7 @@ class Login extends React.Component {
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = {signUp: false};
+    this.state = { signUp: false };
   }
 
   handleSubmit() {
@@ -25,15 +24,72 @@ class Login extends React.Component {
     }));
   }
 
+  getLogInForm() {
+    return (
+      <Fragment>
+        <h2>Log In</h2>
+        <Form onSubmit={this.handleSubmit}>
+          <Form.Group controlId='formBasicEmail'>
+            <Form.Label>Email address</Form.Label>
+            <Form.Control type='email' placeholder='Enter email' />
+          </Form.Group>
+
+          <Form.Group controlId='formBasicPassword'>
+            <Form.Label>Password</Form.Label>
+            <Form.Control type='password' placeholder='Password' />
+          </Form.Group>
+          <Form.Group controlId='formBasicCheckbox'>
+            <Form.Check type='checkbox' label='Remember password' />
+          </Form.Group>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Button variant='primary' type='submit'>Log In</Button>
+            <Button variant='outline-primary' onClick={this.handleClick}>Sign Up</Button>
+          </div>
+        </Form>
+      </Fragment>
+    );
+  }
+
+  getSignUpForm() {
+    return (
+      <Fragment>
+        <h2>Sign Up</h2>
+        <Form onSubmit={this.handleSubmit}>
+          <Form.Row>
+            <Form.Group as={Col} controlId='formFirstName'>
+              <Form.Label>First Name</Form.Label>
+              <Form.Control type='text' placeholder='Adam' />
+            </Form.Group>
+
+            <Form.Group as={Col} controlId='formLastName'>
+              <Form.Label>Last Name</Form.Label>
+              <Form.Control type='text' placeholder='Smith' />
+            </Form.Group>
+          </Form.Row>
+
+          <Form.Group controlId='formBasicEmail'>
+            <Form.Label>Email address</Form.Label>
+            <Form.Control type='email' placeholder='adam@utoronto.ca' />
+          </Form.Group>
+
+          <Form.Group controlId='formBasicPassword'>
+            <Form.Label>Password</Form.Label>
+            <Form.Control type='password' placeholder='password' />
+          </Form.Group>
+          <Form.Group controlId='formBasicCheckbox'>
+            <Form.Check type='checkbox' label='Remember password' />
+          </Form.Group>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Button variant='primary' type='submit'>Sign Up</Button>
+            <Button variant='outline-primary' onClick={this.handleClick}>Log In</Button>
+          </div>
+        </Form>
+      </Fragment>
+    );
+  }
+
   render() {
     const signUp = this.state.signUp;
-    let form;
-
-    if (!signUp) {
-      form = <LogInForm onSubmit={this.handleSubmit} onClick={this.handleClick}/>
-    } else {
-      form = <SignUpForm onSubmit={this.handleSubmit} onClick={this.handleClick}/>
-    }
 
     return (
       <Fragment>
@@ -42,7 +98,7 @@ class Login extends React.Component {
           <Col id='form-col' md={5}>
             <Card id='form'>
               <h1>Beacon</h1>
-              {form}
+              {signUp ? this.getSignUpForm() : this.getLogInForm()}
             </Card>
           </Col>
           <Col></Col>
@@ -50,70 +106,6 @@ class Login extends React.Component {
       </Fragment>
     );
   }
-}
-
-function LogInForm(props) {
-  return (
-    <Fragment>
-      <h2>Log In</h2>
-      <Form onSubmit={props.onSubmit}>
-        <Form.Group controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control type="email" placeholder="Enter email" />
-        </Form.Group>
-
-        <Form.Group controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />
-        </Form.Group>
-        <Form.Group controlId="formBasicCheckbox">
-          <Form.Check type="checkbox" label="Remember password" />
-        </Form.Group>
-        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-          <Button variant="primary" type="submit">Log In</Button>
-          <Button variant='outline-primary' onClick={props.onClick}>Sign Up</Button>
-        </div>
-      </Form>
-    </Fragment>
-  );
-}
-
-function SignUpForm(props) {
-  return (
-    <Fragment>
-      <h2>Sign Up</h2>
-      <Form onSubmit={props.onSubmit}>
-        <Form.Row>
-          <Form.Group as={Col} controlId="formFirstName">
-              <Form.Label>First Name</Form.Label>
-              <Form.Control type="text" placeholder="Adam" />
-          </Form.Group>
-
-          <Form.Group as={Col} controlId="formLastName">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control type="text" placeholder="Smith" />
-          </Form.Group>
-        </Form.Row>
-
-        <Form.Group controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control type="email" placeholder="adam@utoronto.ca" />
-        </Form.Group>
-
-        <Form.Group controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder='password' />
-        </Form.Group>
-        <Form.Group controlId="formBasicCheckbox">
-          <Form.Check type="checkbox" label="Remember password" />
-        </Form.Group>
-        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-          <Button variant="primary" type="submit">Sign Up</Button>
-          <Button variant='outline-primary' onClick={props.onClick}>Log In</Button>
-        </div>
-      </Form>
-    </Fragment>
-  );
 }
 
 export default Login;
