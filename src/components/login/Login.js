@@ -7,12 +7,7 @@ import Card from 'react-bootstrap/Card';
 import '../../styles/login.css';
 
 class Login extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { signUp: false };
-  }
+  state = { signUp: false };
 
   handleSubmit() {
     this.props.history.push('/home');
