@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import dummyEvents from '../../static/dummyEvents';
 import Header from "../shared/Header";
 import {Link} from "react-router-dom";
@@ -17,7 +18,8 @@ class Event extends React.Component {
       { name: 'Amir', comment: 'Excited to be there!', profilePic: 'https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-9/62357713_2486535374699741_4082721466909458432_n.jpg?_nc_cat=110&_nc_oc=AQntc7psN0850o8haE0EtEBxY2C9iSfug6M6oiroGSPLLdvkzyw1CSQsxnlOvqHQ5Ws&_nc_ht=scontent-yyz1-1.xx&oh=607a0e7e4f6d30eb7ad87d77685723cc&oe=5E6572C1' },
       { name: 'Sulagshan', comment: 'Lets go team 38.', profilePic: 'https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-9/69856555_10156137121612691_2505740614054707200_n.jpg?_nc_cat=101&_nc_oc=AQn0rYKBQPag1PKZYV90uP7zHB7S8bgT2etQI6OE2PaoA7ILLBMybw1i5Zc6ll21bbM&_nc_ht=scontent-yyz1-1.xx&oh=fa6b1db99512f73aa9f373e4d071e7dc&oe=5E167A55' }
     ],
-    comment: 'Enter your comment'
+    openRsvpNotif: false,
+    comment: ''
   };
 
   componentDidMount() {
@@ -88,10 +90,17 @@ class Event extends React.Component {
     );
   }
 
-  addComment(comment) {
+  // addComment(comment) {
     //send comment to data base
 
+  // }
 
+  handleMarkRSVP = (event) => {
+    this.setState({ openRsvpNotif: true });
+  }
+
+  handleRsvpClose = (event) => {
+    this.setState({ openRsvpNotif: false });
   }
 
   handleChange = (event) => {
@@ -99,26 +108,36 @@ class Event extends React.Component {
   }
 
   handleSubmit = (event) => {
-    //add to mock data in actuality want ot submit to database of coments for this event
-    alert('An essay was submitted: ' + this.state.comment);
-    // const newComment = { name: 'Amir', comment: this.state.comment, profilePic: 'https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-9/62357713_2486535374699741_4082721466909458432_n.jpg?_nc_cat=110&_nc_oc=AQntc7psN0850o8haE0EtEBxY2C9iSfug6M6oiroGSPLLdvkzyw1CSQsxnlOvqHQ5Ws&_nc_ht=scontent-yyz1-1.xx&oh=607a0e7e4f6d30eb7ad87d77685723cc&oe=5E6572C1' };
-    // this.setState((state, props) => {
-    //   this.state.mock_data.push(newComment);
-    // });
+    //add comment to mock data
+    //in actuality want to submit to database of coments for this event
+    const newComment = { name: 'Amir', comment: this.state.comment, profilePic: 'https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-9/62357713_2486535374699741_4082721466909458432_n.jpg?_nc_cat=110&_nc_oc=AQntc7psN0850o8haE0EtEBxY2C9iSfug6M6oiroGSPLLdvkzyw1CSQsxnlOvqHQ5Ws&_nc_ht=scontent-yyz1-1.xx&oh=607a0e7e4f6d30eb7ad87d77685723cc&oe=5E6572C1' };
+    this.setState({
+      mock_data: this.state.mock_data.concat(newComment)
+    });
     event.preventDefault();
   }
 
   render() {
-    const { event } = this.state;
+    const { event, openRsvpNotif } = this.state;
     return (
       <div>
+          <Modal show={openRsvpNotif} onHide={this.handleRsvpClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>We got yourRSVP!</Modal.Title>
+            </Modal.Header>
+            <Modal.Footer>
+              <Button variant="primary" onClick={this.handleRsvpClose}>
+                Okay
+              </Button>
+            </Modal.Footer>
+          </Modal>
           <Container>
               <Row>
                   <Col sm={4}>
                       <h4>{event.title}</h4>
                   </Col>
                   <Col>
-                      <Button>
+                      <Button onClick={this.handleMarkRSVP}>
                           rsvp
                       </Button>
                   </Col>
@@ -147,7 +166,9 @@ class Event extends React.Component {
                       <label>
                           Comment:
                           <br></br>
-                          <textarea value={this.state.comment} onChange={this.handleChange} />
+                          <textarea value={this.state.comment}
+                                    onChange={this.handleChange}
+                                    placeholder="Add Comment"></textarea>
                       </label>
                       <br></br>
                       <Button type="submit">
