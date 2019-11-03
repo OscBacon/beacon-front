@@ -9,8 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import dummyEvents from '../../static/dummyEvents';
 import TextField from '@material-ui/core/TextField';
-import Header from "../shared/Header";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 class Home extends React.Component {
@@ -96,38 +95,31 @@ class Home extends React.Component {
     return (
       <div>
         <Row>
-          <Col md={{ span: 6, offset: 3 }}>
-            <TextField
-              id="outlined-name"
-              label="Title"
-              margin="normal"
-              variant="filled"
-              onInput={this.inputEventTitle}
-            />
-          </Col>
+          <TextField
+            label="Title"
+            margin="normal"
+            variant="filled"
+            onInput={this.inputEventTitle}
+          />
         </Row>
         <Row>
-          <Col md={{ span: 6, offset: 3 }}>
-            <TextField
-              id="outlined-name"
-              label="Date"
-              margin="normal"
-              variant="filled"
-              onInput={this.inputEventDate}
-            />
-          </Col>
+          <TextField
+            label="Date"
+            margin="normal"
+            variant="filled"
+            onInput={this.inputEventDate}
+          />
         </Row>
         <Row>
-          <Col md={{ span: 6, offset: 3 }}>
-
-            <TextField
-              id="filled-full-width"
-              label="Description"
-              margin="normal"
-              variant="filled"
-              onInput={this.inputEventDescription}
-            />
-          </Col>
+          <TextField
+            label="Description"
+            margin="normal"
+            variant="filled"
+            onInput={this.inputEventDescription}
+          />
+        </Row>
+        <Row>
+          <Button>Upload Image</Button>
         </Row>
       </div>
     );
@@ -174,28 +166,26 @@ class Home extends React.Component {
 
     return (
       <div>
+        <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add a new event</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>{this.getNewEventForm()}</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.handleNewEventClose}>
+              Close
+                </Button>
+            <Button variant="primary" onClick={this.handleNewEventSave}>
+              Add
+                </Button>
+          </Modal.Footer>
+        </Modal>
         <Container>
-          <Row>
-            <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>
-              <Modal.Header closeButton>
-                <Modal.Title>Add a new event</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>{this.getNewEventForm()}</Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={this.handleNewEventClose}>
-                  Close
-                </Button>
-                <Button variant="primary" onClick={this.handleNewEventSave}>
-                  Add
-                </Button>
-              </Modal.Footer>
-            </Modal>
-          </Row>
           <Row>
             <Col sm={4}>
               <div>
                 <Button
-                    onClick={this.handleEventToggle}
+                  onClick={this.handleEventToggle}
                 >Show Events</Button>
                 <div>
                   {showEvents && this.getEventTable()}
@@ -206,10 +196,10 @@ class Home extends React.Component {
               <Row>
                 {this.getMap()}
               </Row>
-                <Button
-                    variant="success"
-                    onClick={this.handleAddNewEvent}
-                >Add Event</Button>
+              <Button
+                variant="success"
+                onClick={this.handleAddNewEvent}
+              >Add Event</Button>
             </Col>
           </Row>
         </Container>
