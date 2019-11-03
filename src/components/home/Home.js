@@ -41,7 +41,7 @@ class Home extends React.Component {
 
     events.forEach((event) => {
       rows.push(
-        <tr>
+        <tr key={`row_${rowNum}`}>
           <td>{rowNum}</td>
           <td>
             <h3>

@@ -32,22 +32,12 @@ class Profile extends React.Component {
     showEditPicture: false,
 
     currentEvent: 'Krispy Kreme Donut Sale',
-    pastEvents: [
-      {
-        date: 1571531434750,
-        title: 'CSC309 Study Session',
-        description: 'A study session for CSC309'
-      },
-      {
-        date: 1551331434750,
-        title: 'Lorem Ipsum',
-        description: 'A filler event'
-      }
-    ]
-  }
+    pastEvents: []
+  };
 
   componentDidMount() {
     this.getProfile();
+
   }
 
   // TODO: API call to get data about a user's profile
@@ -60,7 +50,19 @@ class Profile extends React.Component {
       newUsername: dummyUsers[0].username,
       newFirstName: dummyUsers[0].firstName,
       newLastName: dummyUsers[0].lastName,
-     })
+      pastEvents: [
+          {
+            date: 1571531434750,
+            title: 'CSC309 Study Session',
+            description: 'A study session for CSC309'
+          },
+          {
+            date: 1551331434750,
+                title: 'Lorem Ipsum',
+              description: 'A filler event'
+          }
+        ]
+     });
 
      // TODO: Check if this is the current user's profile page
      if (true) {
@@ -75,7 +77,7 @@ class Profile extends React.Component {
   toggleEditProfile = () => {
     const { showEditProfile } = this.state;
     this.setState({ showEditProfile: !showEditProfile });
-  }
+  };
 
   saveEditProfile = () => {
     const { newUsername, newFirstName, newLastName } = this.state;
@@ -85,10 +87,10 @@ class Profile extends React.Component {
       username: newUsername,
       firstName: newFirstName,
       lastName: newLastName,
-    })
+    });
 
     return this.toggleEditProfile();
-  }
+  };
 
   cancelEditProfile = () => {
     const { username, firstName, lastName } = this.state;
@@ -96,10 +98,10 @@ class Profile extends React.Component {
       newUsername: username,
       newFirstName: firstName,
       newLastName: lastName
-    })
+    });
 
     return this.toggleEditProfile();
-  }
+  };
 
   getEditProfileModal = () => {
       const { showEditProfile, newUsername, newFirstName, newLastName } = this.state;
