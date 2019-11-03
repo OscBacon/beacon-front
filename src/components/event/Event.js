@@ -8,6 +8,7 @@ import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import dummyEvents from '../../static/dummyEvents';
 import Header from "../shared/Header";
+import {Link} from "react-router-dom";
 
 class Event extends React.Component {
   state = {
@@ -17,7 +18,7 @@ class Event extends React.Component {
       { name: 'Sulagshan', comment: 'Lets go team 38.', profilePic: 'https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-9/69856555_10156137121612691_2505740614054707200_n.jpg?_nc_cat=101&_nc_oc=AQn0rYKBQPag1PKZYV90uP7zHB7S8bgT2etQI6OE2PaoA7ILLBMybw1i5Zc6ll21bbM&_nc_ht=scontent-yyz1-1.xx&oh=fa6b1db99512f73aa9f373e4d071e7dc&oe=5E167A55' }
     ],
     comment: 'Enter your comment'
-  }
+  };
 
   componentDidMount() {
     this.getEvents();
@@ -47,7 +48,7 @@ class Event extends React.Component {
         <Col md={1}>
           <Image src={e.profilePic} id="userProfileSmallPic" roundedCircle />
           <p>
-            <a id='userProfileName' href='/profile'>{e.name}</a>
+            <Link id='userProfileName' to='/profile'>{e.name}</Link>
           </p>
         </Col>
       );
@@ -66,7 +67,7 @@ class Event extends React.Component {
           <td>
             <Image src={e.profilePic} id="userProfileSmallPic" roundedCircle />
             <p>
-              <a id='userProfileName' href='/profile'>{e.name}</a>
+              <Link id='userProfileName' to='/profile'>{e.name}</Link>
             </p>
           </td>
           <td>

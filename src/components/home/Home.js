@@ -10,6 +10,7 @@ import Modal from 'react-bootstrap/Modal';
 import dummyEvents from '../../static/dummyEvents';
 import TextField from '@material-ui/core/TextField';
 import Header from "../shared/Header";
+import {Link} from "react-router-dom";
 
 
 class Home extends React.Component {
@@ -44,7 +45,7 @@ class Home extends React.Component {
           <td>{rowNum}</td>
           <td>
             <h3>
-              <a id='eventTitle' href='/event'>{event.title}</a>
+              <Link id='eventTitle' to='/event'>{event.title}</Link>
             </h3>
             <h5>{this.convertTime(event.date)}</h5>
             <p>{event.description}</p>

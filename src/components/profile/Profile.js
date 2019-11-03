@@ -13,6 +13,7 @@ import Dropzone from 'react-dropzone';
 
 import '../../styles/profile.css';
 import dummyUsers from '../../static/dummyUsers.js';
+import {Link} from "react-router-dom";
 
 class Profile extends React.Component {
   state = {
@@ -272,7 +273,7 @@ class Profile extends React.Component {
             <Col>
               <h1>{firstName} {lastName}</h1>
               <p>
-                Current Event: <a id='currEvent' href='/event'>{currentEvent}</a>
+                Current Event: <Link id='currEvent' to='/event'>{currentEvent}</Link>
               </p>
             </Col>
           </Row>
