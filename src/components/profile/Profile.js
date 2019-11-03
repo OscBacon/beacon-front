@@ -7,8 +7,9 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faUser, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faUser, faEdit, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import TextField from '@material-ui/core/TextField';
+import Dropzone from 'react-dropzone';
 
 import '../../styles/profile.css';
 import dummyUsers from '../../static/dummyUsers.js';
@@ -18,13 +19,16 @@ class Profile extends React.Component {
     username: null,
     firstName: null,
     lastName: null,
+    picturePath: null,
 
     newUsername: null,
     newFirstName: null,
     newLastName: null,
+    newPicturePath: null,
     newProfilePicture: null,
 
     showEditProfile: false,
+    showEditPicture: false,
 
     currentEvent: 'Krispy Kreme Donut Sale',
     pastEvents: [
@@ -51,6 +55,7 @@ class Profile extends React.Component {
       username: dummyUsers[0].username,
       firstName: dummyUsers[0].firstName,
       lastName: dummyUsers[0].lastName,
+      picturePath: dummyUsers[0].avatar,
       newUsername: dummyUsers[0].username,
       newFirstName: dummyUsers[0].firstName,
       newLastName: dummyUsers[0].lastName,
@@ -62,6 +67,10 @@ class Profile extends React.Component {
      }
   }
 
+  handleAddFriend() {
+
+  }
+
   toggleEditProfile = () => {
     const { showEditProfile } = this.state;
     this.setState({ showEditProfile: !showEditProfile });
@@ -70,11 +79,11 @@ class Profile extends React.Component {
   saveEditProfile = () => {
     const { newUsername, newFirstName, newLastName } = this.state;
 
-    // TODO: API Call to update user
+    // TODO: API Call to update user;
     this.setState({
       username: newUsername,
       firstName: newFirstName,
-      lastName: newLastName
+      lastName: newLastName,
     })
 
     return this.toggleEditProfile();
@@ -92,7 +101,7 @@ class Profile extends React.Component {
   }
 
   getEditProfileModal = () => {
-      const { showEditProfile, newUsername, newFirstName, newLastName, newProfilePicture } = this.state;
+      const { showEditProfile, newUsername, newFirstName, newLastName } = this.state;
 
     return (
       <Modal show={showEditProfile} onHide={this.cancelEditProfile}>
@@ -100,42 +109,30 @@ class Profile extends React.Component {
           <Modal.Title>Edit Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Row>
-            <Col md={{ span: 6, offset: 3}}>
-              <TextField 
-                onInput={(e) => this.setState({ newUsername: e.target.value})}
-                value={newUsername} 
-                variant='filled'
-                margin='normal'
-                label='Username'
-                error={newUsername  === ''}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={{ span: 6, offset: 3}}>
-              <TextField 
-                onInput={(e) => this.setState({ newFirstName: e.target.value})}
-                value={newFirstName} 
-                variant='filled'
-                margin='normal'
-                label='First Name'
-                error={newFirstName  === ''}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={{ span: 6, offset: 3}}>
-              <TextField 
-                onInput={(e) => this.setState({ newLastName: e.target.value})}
-                value={newLastName} 
-                variant='filled'
-                margin='normal'
-                label='Last Name'
-                error={newLastName  === ''}
-              />
-            </Col>
-          </Row>
+            <TextField 
+              onInput={(e) => this.setState({ newUsername: e.target.value})}
+              value={newUsername} 
+              variant='filled'
+              margin='normal'
+              label='Username'
+              error={newUsername  === ''}
+            />
+            <TextField 
+              onInput={(e) => this.setState({ newFirstName: e.target.value})}
+              value={newFirstName} 
+              variant='filled'
+              margin='normal'
+              label='First Name'
+              error={newFirstName  === ''}
+            />
+            <TextField 
+              onInput={(e) => this.setState({ newLastName: e.target.value})}
+              value={newLastName} 
+              variant='filled'
+              margin='normal'
+              label='Last Name'
+              error={newLastName  === ''}
+            />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-danger" onClick={this.cancelEditProfile}>
@@ -152,9 +149,95 @@ class Profile extends React.Component {
       </Modal>
     )
   }
+
+  toggleEditPicture = () => {
+    const { showEditPicture } = this.state;
+    this.setState({ showEditPicture: !showEditPicture });
+  }
+
+  saveEditPicture = () => {
+    const { newPicturePath } = this.state;
+
+    // TODO: API Call to update user picture
+    this.setState({
+      picturePath: newPicturePath,
+      newPicturePath: null,
+      newProfilePicture: null
+    })
+
+    return this.toggleEditPicture();
+  }
+
+  cancelEditPicture = () => {
+    this.setState({
+      newProfilePicture: null,
+      newPicturePath: null
+    })
+
+    return this.toggleEditPicture();
+  }
+
+  getNewProfilePicture = () => {
+    return (
+      <Image src={this.state.newPicturePath} id='newProfilePicture' roundedCircle/>
+    );
+  }
+
+  getEditPictureModal = () => {
+    const { showEditPicture, newProfilePicture } = this.state;
+
+    const handleDrop = (acceptedFiles) => {
+      const reader = new FileReader();
+
+      reader.readAsDataURL(acceptedFiles[0]);
+
+      reader.addEventListener("load", () => {
+        this.setState({ 
+          newPicturePath: reader.result,
+          newProfilePicture: acceptedFiles[0]
+        });
+      });
+    }
+
+    return (
+      <Modal show={showEditPicture} onHide={this.cancelEditPicture}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Profile Picture</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Dropzone 
+            onDrop={handleDrop}
+          >
+            {({getRootProps, getInputProps}) => (
+              <section id='dropzone'>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Drag 'n' drop some files here, or click to select files</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+          {newProfilePicture && this.getNewProfilePicture()}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-danger" onClick={this.cancelEditPicture}>
+            Cancel
+          </Button>
+          <Button 
+            variant="primary" 
+            onClick={this.saveEditPicture}
+            disabled={newProfilePicture === null}
+          >
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+
   getAddFriendButton() {
     return (
-      <Button size='sm' variant='outline-primary'><FontAwesomeIcon icon={faPlus} /> Add Friend</Button>
+      <Button size='sm' variant='outline-primary'><FontAwesomeIcon icon={faPlus}/> Add Friend</Button>
     );
   }
 
@@ -167,15 +250,21 @@ class Profile extends React.Component {
 
 
   render() {
-      const { me, username, firstName, lastName, currentEvent, pastEvents } = this.state;
+      const { me, username, firstName, lastName, picturePath, currentEvent, pastEvents } = this.state;
 
     return (
       <div>
         <Container>
           <Row>
             <Col xs={3} id='profile-info'>
-              <div>
-                <Image src='https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-1/p160x160/62357713_2486535374699741_4082721466909458432_n.jpg?_nc_cat=110&_nc_oc=AQnzKrIBP2CZlC42tG23jPnCM0o0bdIyvuyyH4Ngotnq-wlwix0cU_ttaRq6oSIfugg&_nc_ht=scontent-yyz1-1.xx&oh=524fe57b6cd9f19183887c60713bcb1e&oe=5E2BD0FA' id='profile-photo' roundedCircle />
+              <div id='profilePictureDiv'>
+                <div 
+                  id='profilePictureHover'
+                  onClick={this.toggleEditPicture}
+                >
+                  Edit Picture
+                </div>
+                <Image src={picturePath} id='profilePicture' roundedCircle/>
               </div>
               <h2><FontAwesomeIcon icon={faUser} /> {username}</h2>
               {me ? this.getEditProfileButton() : this.getAddFriendButton()}
@@ -213,6 +302,7 @@ class Profile extends React.Component {
             </Col>
           </Row>
           {this.getEditProfileModal()}
+          {this.getEditPictureModal()}
         </Container>
       </div>
     );
