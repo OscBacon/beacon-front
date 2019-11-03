@@ -7,16 +7,66 @@ import Card from 'react-bootstrap/Card';
 import '../../styles/login.css';
 
 class Login extends React.Component {
-  state = { signUp: false };
-
-  handleSubmit() {
-    this.props.history.push('/home');
+  state = {
+    //remove the mock_data states later!
+    users_mock_data: [
+      { email: "user", password: "user" },
+      { email: "admin", password: "admin" }
+    ],
+    admins_mock_data: ["admin"],
+    signUp: false,
+    isAdmin: false,
+    isAuthenticated: false,
+    email: null,
+    password: null
   }
 
-  handleClick() {
+  handleSubmit = () => {
+    const { email, password } = this.state;
+    const isAuthenticated = this.authenticateUser(email, password);
+    const isAdmin = this.isAdmin(email);
+
+    // set the global variable for authentication and admin permissions -- should be replaced by cookies later!
+    window.isAuth = isAuthenticated;
+    window.isAdmin = isAdmin;
+    this.props.history.push('/');
+  }
+
+  authenticateUser(email, password) {
+    // replace later with API call to database to get user info
+    const { users_mock_data } = this.state;
+    for (let data of users_mock_data) {
+      if (data.email === email) {
+        if (data.password === password) { return true }
+        else { return false }
+      }
+    }
+
+    return false;
+  }
+
+  isAdmin(user) {
+    // replace with api call later to get all the admins
+    const { admins_mock_data } = this.state;
+    for (let admin of admins_mock_data) {
+      if (admin === user) { return true }
+    }
+
+    return false;
+  }
+
+  handleClick = () => {
     this.setState(prevState => ({
       signUp: !prevState.signUp
     }));
+  }
+
+  handleInputEmail = (event) => {
+    this.setState({ email: event.target.value });
+  }
+
+  handleInputPassword = (event) => {
+    this.setState({ password: event.target.value });
   }
 
   getLogInForm() {
@@ -26,12 +76,12 @@ class Login extends React.Component {
         <Form onSubmit={this.handleSubmit}>
           <Form.Group controlId='formBasicEmail'>
             <Form.Label>Email address</Form.Label>
-            <Form.Control type='email' placeholder='Enter email' />
+            <Form.Control placeholder='Enter email' onChange={this.handleInputEmail} />
           </Form.Group>
 
           <Form.Group controlId='formBasicPassword'>
             <Form.Label>Password</Form.Label>
-            <Form.Control type='password' placeholder='Password' />
+            <Form.Control type='password' placeholder='Password' onChange={this.handleInputPassword} />
           </Form.Group>
           <Form.Group controlId='formBasicCheckbox'>
             <Form.Check type='checkbox' label='Remember password' />
