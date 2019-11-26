@@ -4,56 +4,65 @@ import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
+import {addUser, login} from "../../api/users";
 import '../../styles/login.css';
+import Alert from "react-bootstrap/Alert";
 
 class Login extends React.Component {
   state = {
-    //remove the mock_data states later!
-    users_mock_data: [
-      { email: "user", password: "user" },
-      { email: "admin", password: "admin" }
-    ],
-    admins_mock_data: ["admin"],
     signUp: false,
     isAdmin: false,
     isAuthenticated: false,
     email: null,
-    password: null
+    password: null,
+    firstName: null,
+    lastName: null,
+    username: null,
+    loading: false,
+    error: null,
   }
 
-  handleSubmit = () => {
+  handleSubmit = (e) => {
+    e.preventDefault();
+
+    const { email, password, firstName, lastName, username, signUp} = this.state;
+    this.setState({loading: true});
+
+    if(!signUp){ //logging in
+      this.authenticate();
+    }
+    else{ //signing up
+      addUser({
+        email: email,
+        password: password,
+        user_name: username,
+        first_name: firstName,
+        last_name: lastName,
+      }).then((data) => {
+        if(data.error){
+          return this.setState({loading: false, error: data.error})
+        }
+        this.authenticate();
+      })
+    }
+  };
+
+  authenticate = () => {
     const { email, password } = this.state;
-    const isAuthenticated = this.authenticateUser(email, password);
-    const isAdmin = this.isAdmin(email);
 
-    // set the global variable for authentication and admin permissions -- should be replaced by cookies later!
-    window.isAuth = isAuthenticated;
-    window.isAdmin = isAdmin;
-    this.props.history.push('/');
-  }
-
-  authenticateUser(email, password) {
-    // replace later with API call to database to get user info
-    const { users_mock_data } = this.state;
-    for (let data of users_mock_data) {
-      if (data.email === email) {
-        if (data.password === password) { return true }
-        else { return false }
+    login(email, password).then((data) => {
+      const newState = {loading: false};
+      if(data.error){
+        newState.error = data.error;
       }
-    }
+      this.setState(newState, () => {
+        this.props.history.push('/dashboard');
+      });
 
-    return false;
-  }
-
-  isAdmin(user) {
-    // replace with api call later to get all the admins
-    const { admins_mock_data } = this.state;
-    for (let admin of admins_mock_data) {
-      if (admin === user) { return true }
-    }
-
-    return false;
-  }
+    }).catch((error) => {
+      this.setState({error: error.message});
+    })
+  };
 
   handleClick = () => {
     this.setState(prevState => ({
@@ -61,12 +70,8 @@ class Login extends React.Component {
     }));
   }
 
-  handleInputEmail = (event) => {
-    this.setState({ email: event.target.value });
-  }
-
-  handleInputPassword = (event) => {
-    this.setState({ password: event.target.value });
+  handleInputChange = (event, input) => {
+    this.setState({ [input]: event.target.value });
   }
 
   getLogInForm() {
@@ -76,12 +81,12 @@ class Login extends React.Component {
         <Form onSubmit={this.handleSubmit}>
           <Form.Group controlId='formBasicEmail'>
             <Form.Label>Email address</Form.Label>
-            <Form.Control placeholder='Enter email' onChange={this.handleInputEmail} />
+            <Form.Control placeholder='Enter email' onChange={(e) => this.handleInputChange(e, "email")} />
           </Form.Group>
 
           <Form.Group controlId='formBasicPassword'>
             <Form.Label>Password</Form.Label>
-            <Form.Control type='password' placeholder='Password' onChange={this.handleInputPassword} />
+            <Form.Control type='password' placeholder='Password' onChange={(e) => this.handleInputChange(e, "password")} />
           </Form.Group>
           <Form.Group controlId='formBasicCheckbox'>
             <Form.Check type='checkbox' label='Remember password' />
@@ -103,23 +108,28 @@ class Login extends React.Component {
           <Form.Row>
             <Form.Group as={Col} controlId='formFirstName'>
               <Form.Label>First Name</Form.Label>
-              <Form.Control type='text' placeholder='Adam' />
+              <Form.Control type='text' placeholder='Adam' onChange={(e) => this.handleInputChange(e, "firstName")} />
             </Form.Group>
 
             <Form.Group as={Col} controlId='formLastName'>
               <Form.Label>Last Name</Form.Label>
-              <Form.Control type='text' placeholder='Smith' />
+              <Form.Control type='text' placeholder='Smith' onChange={(e) => this.handleInputChange(e, "lastName")} />
             </Form.Group>
           </Form.Row>
 
+          <Form.Group controlId='formUsername'>
+            <Form.Label>Username</Form.Label>
+            <Form.Control type='text' placeholder='adamsmith9'  onChange={(e) => this.handleInputChange(e, "username")} />
+          </Form.Group>
+
           <Form.Group controlId='formBasicEmail'>
             <Form.Label>Email address</Form.Label>
-            <Form.Control type='email' placeholder='adam@utoronto.ca' />
+            <Form.Control type='email' placeholder='adam@utoronto.ca'  onChange={(e) => this.handleInputChange(e, "email")} />
           </Form.Group>
 
           <Form.Group controlId='formBasicPassword'>
             <Form.Label>Password</Form.Label>
-            <Form.Control type='password' placeholder='password' />
+            <Form.Control type='password' placeholder='password' onChange={(e) => this.handleInputChange(e, "password")} />
           </Form.Group>
           <Form.Group controlId='formBasicCheckbox'>
             <Form.Check type='checkbox' label='Remember password' />
@@ -135,14 +145,23 @@ class Login extends React.Component {
 
   render() {
     const signUp = this.state.signUp;
+    const {loading, error} = this.state;
 
     return (
       <Fragment>
         <Row noGutters>
           <Col></Col>
           <Col id='form-col' md={5}>
+            {error && <Alert variant="danger">
+             {error}
+            </Alert>}
             <Card id='form'>
-              <h1>Beacon</h1>
+              <div>
+                <h1 className="d-inline-block mr-2">Beacon</h1>
+                {loading && <div className="spinner-border" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>}
+              </div>
               {signUp ? this.getSignUpForm() : this.getLogInForm()}
             </Card>
           </Col>

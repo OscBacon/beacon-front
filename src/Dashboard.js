@@ -7,16 +7,20 @@ import Admin from './components/admin/Admin';
 import Event from './components/event/Event';
 import Header from "./components/shared/Header";
 
+import {getCurrentUser} from "./api/users";
+
 // path={`${match.url}app`}
 
 class Dashboard extends Component {
-    render() {
-
-        //TODO uncomment to enforce that the user is logged in before having access to below router
-        if (!window.isAuth) {
-            return <Redirect to={'/login'} />
+    async componentDidMount() {
+        const current = await getCurrentUser();
+        console.log("Logged on", current);
+        if(!current){
+            this.props.history.push('/login');
         }
+    }
 
+    render() {
         return (
             <Fragment>
                 <div id="app-main" className="app-main">

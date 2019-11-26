@@ -44,14 +44,15 @@ export const getUser = (user_id) => {
 // POST request to add a new user
 export const addUser = (user) => {
   // the URL for the request
-  const url = "/users";
+  const url = "/auth/signup";
   
   // Create our request constructor with all the parameters we need
   const request = new Request(domain_url + url, {
     method: "post",
     body: JSON.stringify(user),
+    credentials: 'include',
     headers: {
-      Accept: "application/json, text/plain, */*",
+      Accept: "application/json, text/plain",
       "Content-Type": "application/json"
     }
   });
@@ -59,13 +60,68 @@ export const addUser = (user) => {
   // Send the request with fetch()
   return fetch(request)
     .then(function(res) {
-      if (res.status === 200) {
-        return true
-      } else {
-        return false
-      }
+        return res.json()
+    }).then((json) => {
+        return json;
     })
     .catch(error => {
       console.log(error);
     });
+};
+
+export const getCurrentUser = () => {
+    // the URL for the request
+    const url = "/auth/current";
+
+    // Create our request constructor with all the parameters we need
+    const request = new Request(domain_url + url, {
+        method: "get",
+        credentials: 'include',
+        headers: {
+            Accept: "application/json, text/plain",
+            "Content-Type": "application/json"
+        }
+    });
+
+    // Send the request with fetch()
+    return fetch(request)
+        .then(function(res) {
+            if(res.status !== 200){
+                return null;
+            }
+            return res.json()
+        }).then((json) => {
+            return json;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+};
+
+export const login = (email, password) => {
+    const url = "/auth/login";
+
+    // Create our request constructor with all the parameters we need
+    const request = new Request(domain_url + url, {
+        method: "post",
+        body: JSON.stringify({
+            email,
+            password
+        }),
+        credentials: 'include',
+        headers: {
+            Accept: "application/json, text/plain",
+            "Content-Type": "application/json"
+        }
+    });
+
+    // Send the request with fetch()
+    return fetch(request)
+        .then(function(res) {
+            return res.json()
+        }).then((json) => {
+            return json;
+        }).catch(error => {
+            console.log(error);
+        });
 };
