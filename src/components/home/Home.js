@@ -7,9 +7,9 @@ import Table from 'react-bootstrap/Table';
 import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import dummyEvents from '../../static/dummyEvents';
 import TextField from '@material-ui/core/TextField';
 import { Link } from "react-router-dom";
+import { getEvents, addEvent } from "../../api/events"
 
 
 class Home extends React.Component {
@@ -20,17 +20,20 @@ class Home extends React.Component {
     newEvent: {
       title: "",
       date: "",
+      location: "",
       description: ""
     }
   }
 
   componentDidMount() {
-    this.getEvents();
+    this.getAllEvents();
   }
 
   // API call to get all of the events for the side bar
-  getEvents() {
-    this.setState({ events: dummyEvents });
+  getAllEvents() {
+    getEvents().then((events) => {
+      this.setState({ events: events });
+    });
   }
 
   getEventTable() {
@@ -46,7 +49,7 @@ class Home extends React.Component {
             <h3>
               <Link id='eventTitle' to='/event'>{event.title}</Link>
             </h3>
-            <h5>{this.convertTime(event.date)}</h5>
+            <h5>{event.date}</h5>
             <p>{event.description}</p>
           </td>
         </tr>
@@ -72,19 +75,6 @@ class Home extends React.Component {
     );
   }
 
-  convertTime(time_stamp) {
-    const a = new Date(time_stamp * 1000);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const year = a.getFullYear();
-    const month = months[a.getMonth()];
-    const date = a.getDate();
-    const hour = a.getHours();
-    const min = a.getMinutes();
-    const sec = a.getSeconds();
-    const time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
-    return time;
-  }
-
   getMap() {
     return (
       <Image src={require('../../static/homePageMap.png')} thumbnail />
@@ -108,6 +98,14 @@ class Home extends React.Component {
             margin="normal"
             variant="filled"
             onInput={this.inputEventDate}
+          />
+        </Row>
+        <Row>
+          <TextField
+            label="Location"
+            margin="normal"
+            variant="filled"
+            onInput={this.inputEventLocation}
           />
         </Row>
         <Row>
@@ -138,9 +136,10 @@ class Home extends React.Component {
   }
 
   handleNewEventSave = () => {
-    const { events, newEvent } = this.state;
-    events.push({ ...newEvent });
-    this.setState({ events });
+    const { newEvent } = this.state;
+    addEvent({ ...newEvent }).then(status => console.log(status));
+    this.getAllEvents();
+    this.setState({ openNewEventForm: false });
   }
 
   inputEventTitle = (event) => {
@@ -158,6 +157,12 @@ class Home extends React.Component {
   inputEventDescription = (event) => {
     const { newEvent } = this.state;
     newEvent.description = event.target.value;
+    this.setState({ newEvent });
+  }
+
+  inputEventLocation = (event) => {
+    const { newEvent } = this.state;
+    newEvent.location = event.target.value;
     this.setState({ newEvent });
   }
 
