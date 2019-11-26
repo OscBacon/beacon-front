@@ -125,3 +125,27 @@ export const login = (email, password) => {
             console.log(error);
         });
 };
+
+export const logout = () => {
+    const url = "/auth/logout";
+
+    // Create our request constructor with all the parameters we need
+    const request = new Request(domain_url + url, {
+        method: "post",
+        credentials: 'include',
+        headers: {
+            Accept: "application/json, text/plain",
+            "Content-Type": "application/json"
+        }
+    });
+
+    // Send the request with fetch()
+    return fetch(request)
+        .then(function(res) {
+            return res.json()
+        }).then((json) => {
+            return json;
+        }).catch(error => {
+            console.log(error);
+        });
+};

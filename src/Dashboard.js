@@ -25,7 +25,7 @@ class Dashboard extends Component {
             <Fragment>
                 <div id="app-main" className="app-main">
                     <div>
-                        <Header />
+                        <Header history={this.props.history}/>
                     </div>
                     <Switch>
                         <Route path='/event' component={Event} />
