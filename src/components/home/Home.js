@@ -11,7 +11,6 @@ import TextField from '@material-ui/core/TextField';
 import { Link } from "react-router-dom";
 import { getEvents, addEvent } from "../../api/events"
 import Map from './Map';
-import events from '../../static/dummyEvents'
 
 
 class Home extends React.Component {
@@ -36,7 +35,6 @@ class Home extends React.Component {
     getEvents().then((events) => {
       this.setState({ events: events });
     });
-    // this.setState({events: events})
   }
 
   getEventTable() {
@@ -171,7 +169,6 @@ class Home extends React.Component {
 
   render() {
     const { showEvents, openNewEventForm } = this.state;
-
     return (
       <div>
         <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>
@@ -203,7 +200,7 @@ class Home extends React.Component {
             <Col sm={8}>
               <Row>
                 {/* {this.getMap()} */}
-                <Map events={events}/>
+                <Map />
               </Row>
               <Button
                 variant="success"

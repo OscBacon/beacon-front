@@ -14,7 +14,7 @@ export const getEvents = () => {
       }
     })
     .then(json => {
-      return json.events;
+      return json.event;
     })
     .catch(error => {
       console.log("failed to get the resources")
