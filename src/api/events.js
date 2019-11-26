@@ -1,4 +1,4 @@
-const domain_url = "http://localhost:3002"
+const domain_url = process.env.BACKEND_URL | "http://localhost:3002"
 
 // GET all events
 export const getEvents = () => {
@@ -14,7 +14,7 @@ export const getEvents = () => {
       }
     })
     .then(json => {
-      return json.event;
+      return json.events;
     })
     .catch(error => {
       console.log("failed to get the resources")
