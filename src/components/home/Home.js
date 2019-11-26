@@ -10,6 +10,8 @@ import Modal from 'react-bootstrap/Modal';
 import TextField from '@material-ui/core/TextField';
 import { Link } from "react-router-dom";
 import { getEvents, addEvent } from "../../api/events"
+import Map from './Map';
+import events from '../../static/dummyEvents'
 
 
 class Home extends React.Component {
@@ -34,6 +36,7 @@ class Home extends React.Component {
     getEvents().then((events) => {
       this.setState({ events: events });
     });
+    // this.setState({events: events})
   }
 
   getEventTable() {
@@ -199,7 +202,8 @@ class Home extends React.Component {
             </Col>
             <Col sm={8}>
               <Row>
-                {this.getMap()}
+                {/* {this.getMap()} */}
+                <Map events={events}/>
               </Row>
               <Button
                 variant="success"
