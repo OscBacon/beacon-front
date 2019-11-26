@@ -48,7 +48,7 @@ class Home extends React.Component {
           <td>{rowNum}</td>
           <td>
             <h3>
-              <Link id='eventTitle' to='/event'>{event.title}</Link>
+              <Link id='eventTitle' to={`/event/${event._id}`}>{event.title}</Link>
             </h3>
             <h5>{event.date}</h5>
             <p>{event.description}</p>

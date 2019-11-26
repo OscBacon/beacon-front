@@ -14,7 +14,7 @@ export const getEvents = () => {
       }
     })
     .then(json => {
-      return json.events;
+      return json.event;
     })
     .catch(error => {
       console.log("failed to get the resources")
@@ -45,7 +45,7 @@ export const getEvent = (event_id) => {
 export const addEvent = (event) => {
   // the URL for the request
   const url = "/events";
-  
+
   // Create our request constructor with all the parameters we need
   const request = new Request(domain_url + url, {
     method: "post",
@@ -58,7 +58,37 @@ export const addEvent = (event) => {
 
   // Send the request with fetch()
   return fetch(request)
-    .then(function(res) {
+    .then(function (res) {
+      if (res.status === 200) {
+        return true
+      } else {
+        return false
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};
+
+// Patch the event
+export const updateEvent = (event_id, event) => {
+  // the URL for the request
+  const url = `/events/${event_id}`;
+  // Create our request constructor with all the parameters we need
+  const request = new Request(domain_url + url, {
+    method: 'PATCH',
+    body: JSON.stringify(event),
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      credentials: 'include',
+      "Content-Type": "application/json",
+      mode: 'cors'
+    }
+  });
+
+  // Send the request with fetch()
+  return fetch(request)
+    .then(function (res) {
       if (res.status === 200) {
         return true
       } else {

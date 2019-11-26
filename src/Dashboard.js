@@ -28,9 +28,9 @@ class Dashboard extends Component {
                         <Header history={this.props.history}/>
                     </div>
                     <Switch>
-                        <Route path='/event' component={Event} />
+                        <Route path='/event/:id' component={Event} />
                         <Route path='/home' component={Home} />
-                        <Route path='/profile' component={Profile} />
+                        <Route path='/profile/:id' component={Profile} />
                         <Route path='/admin' component={Admin} />
                         {window.isAdmin ?
                             <Route path='/' component={Admin} />

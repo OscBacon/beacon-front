@@ -3,7 +3,7 @@ const domain_url = process.env.BACKEND_URL || "http://localhost:3002"
 // GET all users
 export const getUsers = () => {
   // the URL for the request
-  const url = "/users"; // replace with heroku instance?
+  const url = "/users";
 
   return fetch(domain_url + url)
     .then(res => {
@@ -25,7 +25,7 @@ export const getUsers = () => {
 // GET a specific user
 export const getUser = (user_id) => {
   // the URL for the request
-  const url = `/events/${user_id}`; // replace with heroku instance?
+  const url = `/users/${user_id}`; // replace with heroku instance?
 
   return fetch(domain_url + url)
     .then(res => {
@@ -90,8 +90,6 @@ export const getCurrentUser = () => {
                 return null;
             }
             return res.json()
-        }).then((json) => {
-            return json;
         })
         .catch(error => {
             console.log(error);
