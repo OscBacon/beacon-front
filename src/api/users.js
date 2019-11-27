@@ -1,4 +1,4 @@
-const domain_url = process.env.BACKEND_URL || "http://localhost:3002"
+const domain_url = process.env.REACT_APP_BACKEND_URL || "http://localhost:3002"
 
 // GET all users
 export const getUsers = () => {
