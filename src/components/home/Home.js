@@ -11,7 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import { Link } from "react-router-dom";
 import { getEvents, addEvent } from "../../api/events"
 import Map from './Map';
-
+import Geosuggest from 'react-geosuggest';
 
 class Home extends React.Component {
   state = {
@@ -22,7 +22,8 @@ class Home extends React.Component {
       title: "",
       date: "",
       location: "",
-      description: ""
+      description: "",
+      coordinates: []
     }
   }
 
@@ -102,11 +103,11 @@ class Home extends React.Component {
           />
         </Row>
         <Row>
-          <TextField
+          <Geosuggest 
             label="Location"
-            margin="normal"
-            variant="filled"
-            onInput={this.inputEventLocation}
+            className="MuiInputBase-root MuiFilledInput-root MuiFilledInput-underline MuiInputBase-formControl"
+            inputClassName="MuiInputBase-input MuiFilledInput-input"  
+            onSuggestSelect={this.onLocationSelect}
           />
         </Row>
         <Row>
@@ -161,10 +162,10 @@ class Home extends React.Component {
     this.setState({ newEvent });
   }
 
-  inputEventLocation = (event) => {
+  onLocationSelect = (suggest) => {
     const { newEvent } = this.state;
-    newEvent.location = event.target.value;
-    this.setState({ newEvent });
+    newEvent.location = suggest.label;
+    newEvent.coordinates = [suggest.location.lng, suggest.location.lat];
   }
 
   render() {
