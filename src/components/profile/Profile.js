@@ -14,6 +14,7 @@ import { getUser, getCurrentUser } from '../../api/users'
 import { getAttendingByUser } from '../../api/attending'
 import { Link } from "react-router-dom";
 import { getEvent } from '../../api/events';
+import '../../styles/profile.css'
 
 class Profile extends React.Component {
   state = {
