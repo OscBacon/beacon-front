@@ -76,14 +76,15 @@ class Map extends React.Component {
         },
         trackUserLocation: true
       }));
-    
     });
+
+    
   }
 
   render() {
       return(
       <div>
-    <div ref={el => this.mapContainer = el} className='mapContainer' />
+        <div ref={el => this.mapContainer = el} className='mapContainer' />
       </div >
     )
   }

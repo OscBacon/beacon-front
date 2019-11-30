@@ -45,7 +45,7 @@ class Event extends React.Component {
     const attendings = []
     let rsvped = false;
 
-    const curren_user = await getCurrentUser();
+    const current_user = await getCurrentUser();
     getAttendingByEvent(event_id).then((attendees) => {
       attendees.forEach((e) => {
         //fetch the user by their user_id
@@ -60,7 +60,7 @@ class Event extends React.Component {
           );
         });
 
-        if (e.user_id == curren_user._id) {
+        if (e.user_id == current_user._id) {
           rsvped = true;
         }
 
