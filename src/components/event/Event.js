@@ -30,6 +30,7 @@ class Event extends React.Component {
     const id = this.props.match.params.id;
     getEvent(id).then((event) => {
       console.log(event);
+      console.log(event);
       this.setState({ event: event });
       this.getAttendents();
       this.getDiscussions();
@@ -134,9 +135,11 @@ class Event extends React.Component {
         comment: comment
       }
       event.comments.push(new_comment);
-      updateEvent(event._id, event).then((status) => console.log(status));
-      this.getEvents();
-      this.getDiscussions();
+      updateEvent(event._id, event).then((status) => {
+        console.log(status)
+        this.getEvents();
+        this.getDiscussions();
+      });
     });
   }
 

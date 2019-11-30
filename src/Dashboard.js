@@ -12,34 +12,53 @@ import {getCurrentUser} from "./api/users";
 // path={`${match.url}app`}
 
 class Dashboard extends Component {
+
+    constructor(props){
+        super(props);
+        this.state = {
+            authenticated: false
+        }
+    }
+
     async componentDidMount() {
         const current = await getCurrentUser();
         console.log("Logged on", current);
         if(!current){
-            this.props.history.push('/login');
+            this.setState({authenticated: false}, () => {
+                this.props.history.push('/login');
+            })
+        }
+        else{
+            this.setState({authenticated: true});
         }
     }
 
     render() {
+        const {authenticated} = this.state;
+        
         return (
             <Fragment>
-                <div id="app-main" className="app-main">
-                    <div>
-                        <Header history={this.props.history}/>
-                    </div>
-                    <Switch>
-                        <Route path='/event/:id' component={Event} />
-                        <Route path='/home' component={Home} />
-                        <Route path='/profile/:id' component={Profile} />
-                        <Route path='/admin' component={Admin} />
-                        {window.isAdmin ?
-                            <Route path='/' component={Admin} />
-                            :
-                            <Route path='/' component={Home} />
-                        }
+                {!authenticated ?
+                    <div/>
+                    :  
+                    <div id="app-main" className="app-main">
+                        <div>
+                            <Header history={this.props.history}/>
+                        </div>
+                        <Switch>
+                            <Route path='/home' component={Home} />
+                            <Route path='/event/:id' component={Event} />
+                            <Route path='/profile/:id' component={Profile} />
+                            <Route path='/admin' component={Admin} />
+                            {window.isAdmin ?
+                                <Route path='/' component={Admin} />
+                                :
+                                <Route path='/' component={Home} />
+                            }
 
-                    </Switch>
-                </div>
+                        </Switch>
+                    </div>
+                }
             </Fragment>
         );
 

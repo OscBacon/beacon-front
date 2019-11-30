@@ -52,8 +52,10 @@ class Login extends React.Component {
 
     login(email, password).then((data) => {
       const newState = {loading: false};
+      console.log(data);
       if(data.error){
         newState.error = data.error;
+        return this.setState(newState);
       }
       this.setState(newState, () => {
         this.props.history.push('/dashboard');
@@ -71,7 +73,7 @@ class Login extends React.Component {
   }
 
   handleInputChange = (event, input) => {
-    this.setState({ [input]: event.target.value });
+    this.setState({ [input]: event.target.value, error: null });
   }
 
   getLogInForm() {
@@ -88,9 +90,7 @@ class Login extends React.Component {
             <Form.Label>Password</Form.Label>
             <Form.Control type='password' placeholder='Password' onChange={(e) => this.handleInputChange(e, "password")} />
           </Form.Group>
-          <Form.Group controlId='formBasicCheckbox'>
-            <Form.Check type='checkbox' label='Remember password' />
-          </Form.Group>
+
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button variant='primary' type='submit'>Log In</Button>
             <Button variant='outline-primary' onClick={this.handleClick}>Sign Up</Button>
@@ -131,9 +131,7 @@ class Login extends React.Component {
             <Form.Label>Password</Form.Label>
             <Form.Control type='password' placeholder='password' onChange={(e) => this.handleInputChange(e, "password")} />
           </Form.Group>
-          <Form.Group controlId='formBasicCheckbox'>
-            <Form.Check type='checkbox' label='Remember password' />
-          </Form.Group>
+          
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button variant='primary' type='submit'>Sign Up</Button>
             <Button variant='outline-primary' onClick={this.handleClick}>Log In</Button>

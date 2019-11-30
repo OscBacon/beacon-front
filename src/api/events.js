@@ -1,11 +1,21 @@
 const domain_url = process.env.REACT_APP_BACKEND_URL || "http://localhost:3002"
 
+const global_options = {
+  credentials: 'include',
+  headers: {
+      Accept: "application/json, text/plain",
+      "Content-Type": "application/json"
+  }
+}
+
 // GET all events
 export const getEvents = () => {
   // the URL for the request
   const url = "/events"; // replace with heroku instance?
 
-  return fetch(domain_url + url)
+  const request = new Request(domain_url + url, global_options);
+
+  return fetch(request)
     .then(res => {
       if (res.status === 200) {
         return res.json();
@@ -27,17 +37,18 @@ export const getEvent = (event_id) => {
   // the URL for the request
   const url = `/events/${event_id}`; // replace with heroku instance?
 
-  return fetch(domain_url + url)
+  const request = new Request(domain_url + url, global_options);
+
+  return fetch(request)
     .then(res => {
       if (res.status === 200) {
         return res.json();
       } else {
-        alert("Could not get the event");
+        return Promise.reject("Couldn't find event");
       }
     })
     .catch(error => {
-      console.log("failed to get the event")
-      console.log(error);
+      alert(error.message)
     });
 };
 
@@ -50,6 +61,7 @@ export const addEvent = (event) => {
   const request = new Request(domain_url + url, {
     method: "post",
     body: JSON.stringify(event),
+    credentials: "include",
     headers: {
       Accept: "application/json, text/plain, */*",
       "Content-Type": "application/json"
@@ -78,6 +90,7 @@ export const updateEvent = (event_id, event) => {
   const request = new Request(domain_url + url, {
     method: 'PATCH',
     body: JSON.stringify(event),
+    credentials: "include",
     headers: {
       Accept: "application/json, text/plain, */*",
       credentials: 'include',

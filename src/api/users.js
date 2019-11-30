@@ -1,11 +1,21 @@
 const domain_url = process.env.REACT_APP_BACKEND_URL || "http://localhost:3002"
 
+const global_options = {
+  credentials: 'include',
+  headers: {
+      Accept: "application/json, text/plain",
+      "Content-Type": "application/json"
+  }
+}
+
+
 // GET all users
 export const getUsers = () => {
   // the URL for the request
   const url = "/users";
+  const request = new Request(domain_url + url, global_options);
 
-  return fetch(domain_url + url)
+  return fetch(request)
     .then(res => {
       if (res.status === 200) {
         return res.json();
@@ -26,8 +36,9 @@ export const getUsers = () => {
 export const getUser = (user_id) => {
   // the URL for the request
   const url = `/users/${user_id}`; // replace with heroku instance?
+  const request = new Request(domain_url + url, global_options);
 
-  return fetch(domain_url + url)
+  return fetch(request)
     .then(res => {
       if (res.status === 200) {
         return res.json();

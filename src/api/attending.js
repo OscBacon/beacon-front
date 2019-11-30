@@ -1,11 +1,19 @@
 const domain_url = "http://localhost:3002"
 
+const global_options = {
+  credentials: 'include',
+  headers: {
+      Accept: "application/json, text/plain",
+      "Content-Type": "application/json"
+  }
+}
+
 // GET all attendings
 export const getAttendings = () => {
   // the URL for the request
   const url = "/attendings"; // replace with heroku instance?
-
-  return fetch(domain_url + url)
+  const request = new Request(domain_url + url, global_options);
+  return fetch(request)
     .then(res => {
       if (res.status === 200) {
         return res.json();
@@ -26,8 +34,9 @@ export const getAttendings = () => {
 export const getAttendingByUser = (user_id) => {
   // the URL for the request
   const url = `/attendings/users/${user_id}`;
+  const request = new Request(domain_url + url, global_options);
 
-  return fetch(domain_url + url)
+  return fetch(request)
     .then(res => {
       if (res.status === 200) {
         return res.json();
@@ -45,8 +54,8 @@ export const getAttendingByUser = (user_id) => {
 export const getAttendingByEvent = (event_id) => {
     // the URL for the request
     const url = `/attendings/events/${event_id}`;
-  
-    return fetch(domain_url + url)
+    const request = new Request(domain_url + url, global_options);
+    return fetch(request)
       .then(res => {
         if (res.status === 200) {
           return res.json();
@@ -69,6 +78,7 @@ export const addAttending = (attending) => {
   const request = new Request(domain_url + url, {
     method: "post",
     body: JSON.stringify(attending),
+    credentials: "include",
     headers: {
       Accept: "application/json, text/plain, */*",
       "Content-Type": "application/json"
