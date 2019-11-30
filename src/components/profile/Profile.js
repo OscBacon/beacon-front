@@ -17,6 +17,7 @@ import { getEvent } from '../../api/events';
 
 class Profile extends React.Component {
   state = {
+    id: null,
     username: null,
     firstName: null,
     lastName: null,
@@ -42,8 +43,17 @@ class Profile extends React.Component {
 
   async getProfile() {
     const id = this.props.match.params.id;
-    getUser(id).then((user) => {
+
+    let userPromise;
+    if (id === "me") {
+      userPromise = getCurrentUser();
+    } else {
+      userPromise = getUser(id);
+    }
+    
+    userPromise.then((user) => {
       this.setState({
+        id: user._id,
         username: user.user_name,
         firstName: user.first_name,
         lastName: user.last_name,
@@ -64,9 +74,8 @@ class Profile extends React.Component {
   }
 
   getUserEvents() {
-    const id = this.props.match.params.id;
     const events = [];
-    getAttendingByUser(id).then((attendings) => {
+    getAttendingByUser(this.state.id).then((attendings) => {
       attendings.forEach((attending) => {
         getEvent(attending.event_id).then(event => {
           events.push(event);
