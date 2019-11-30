@@ -138,8 +138,8 @@ class Home extends React.Component {
 
   handleNewEventSave = () => {
     const { newEvent } = this.state;
-    addEvent({ ...newEvent }).then(status => console.log(status));
-    this.getAllEvents();
+    console.log(newEvent)
+    addEvent({ ...newEvent }).then(status => this.getAllEvents());
     this.setState({ openNewEventForm: false });
   }
 
@@ -199,7 +199,6 @@ class Home extends React.Component {
             </Col>
             <Col sm={8}>
               <Row>
-                {/* {this.getMap()} */}
                 <Map />
               </Row>
               <Button
