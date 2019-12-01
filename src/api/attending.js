@@ -88,3 +88,27 @@ export const addAttending = (attending) => {
       console.log(error);
     });
 };
+
+// Delete request to add a new attending
+export const deleteAttending = (attending_id) => {
+    // the URL for the request
+    const url = `/attendings/${attending_id}`;
+    
+    // Create our request constructor with all the parameters we need
+    const request = new Request(domain_url + url, {
+      method: "DELETE",
+    });
+  
+    // Send the request with fetch()
+    return fetch(request)
+      .then(function(res) {
+        if (res.status === 200) {
+          return res.json()
+        } else {
+            alert("Could not delete the attending");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
