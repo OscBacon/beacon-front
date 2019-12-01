@@ -4,15 +4,6 @@
     color: #007bff;
 }
 
-.geosuggest {
-    display: inline-block !important;
-}
-
-.geosuggest__suggests {
-    text-decoration: underline;
-    list-style: none;
-}
-
 .createEventButton {
     position: relative;
     top: 10px;
