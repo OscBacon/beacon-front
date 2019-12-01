@@ -12,10 +12,14 @@ import { getEvent, updateEvent } from "../../api/events";
 import { getCurrentUser, getUser } from "../../api/users";
 import { getAttendingByEvent, addAttending, deleteAttending } from "../../api/attending"
 import Dropzone from 'react-dropzone';
+import TextField from '@material-ui/core/TextField';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import Geosuggest from 'react-geosuggest';
 
 class Event extends React.Component {
   state = {
-    event: [],
+    event: {},
     openRsvpNotif: false,
     comment: '',
     attendees: [],
@@ -23,6 +27,13 @@ class Event extends React.Component {
     rsvped: false,
     curr_user_attending_id: false,
     createdByCurrUser: false,
+
+    showEditEvent: false,
+    newEventTitle: "",
+    newEventDate: "",
+    newEventLocation: "",
+    newEventDescription: "",
+    newEventCoordinates: [],
 
     showEditPicture: false,
     picturePath: 'https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg',
@@ -41,7 +52,12 @@ class Event extends React.Component {
       this.setState({
         event: event,
         createdByCurrUser: currUserId === event.created_by,
-        picturePath: event.image ? event.image : this.state.picturePath
+        picturePath: event.image ? event.image : this.state.picturePath,
+        newEventTitle: event.title,
+        newEventDate: event.date,
+        newEventLocation: event.location,
+        newEventDescription: event.description,
+        newEventCoordinates: event.coordinates,
       });
       this.getAttendents();
       this.getDiscussions();
@@ -157,6 +173,100 @@ class Event extends React.Component {
     });
   }
 
+  toggleEditEvent = () => {
+    const { showEditEvent } = this.state;
+    this.setState({ showEditEvent: !showEditEvent });
+  };
+
+  saveEditEvent = () => {
+    const { event, newEventTitle, newEventDate, newEventLocation, newEventCoordinates, newEventDescription } = this.state;
+    const new_event = {...event};
+    new_event.title = newEventTitle;
+    new_event.date = newEventDate;
+    new_event.location = newEventLocation;
+    new_event.coordinates = newEventCoordinates;
+    new_event.description = newEventDescription;
+
+    updateEvent(event._id, new_event).then(this.getEvents());
+    this.setState({
+      event: {...new_event},
+      newEventTitle: null,
+      newEventDate: null,
+      newEventLocation: null,
+      newEventCoordinates: null,
+      newEventDescription: null
+    });
+
+    return this.toggleEditEvent();
+  }
+
+  cancelEditEvent = () => {
+    const { event } = this.state;
+    this.setState({
+      newEventTitle: event.title,
+      newEventDate: event.date,
+      newEventLocation: event.location,
+      newEventDescription: event.description,
+      newEventCoordinates: event.coordinates,
+    });
+
+    return this.toggleEditEvent();
+  };
+
+  getEditEventModal = () => {
+    const { showEditEvent, newEventTitle, newEventDate, newEventLocation, newEventCoordinates, newEventDescription } = this.state;
+
+    return (
+      <Modal show={showEditEvent} onHide={this.cancelEditEvent}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Event</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <TextField
+            label="Title"
+            margin="normal"
+            variant="filled"
+            value={newEventTitle}
+            onInput={(e) => this.setState({ newEventTitle: e.target.value})}
+          />
+          <TextField
+            onInput={(e) => this.setState({ newEventDate: e.target.value })}
+            label="Date"
+            margin="normal"
+            variant="filled"
+            value={newEventDate}
+          />
+          <Geosuggest
+            label="Location"
+            className="MuiInputBase-root MuiFilledInput-root MuiFilledInput-underline MuiInputBase-formControl"
+            inputClassName="MuiInputBase-input MuiFilledInput-input"
+            onSuggestSelect={this.onLocationSelect}
+            initialValue={newEventLocation}
+          />
+          <TextField
+            onInput={(e) => this.setState({ newEventDescription: e.target.value })}
+            label="Description"
+            margin="normal"
+            variant="filled"
+            value={newEventDescription}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-danger" onClick={this.cancelEditEvent}>
+            Cancel
+            </Button>
+          <Button
+            variant="primary"
+            onClick={this.saveEditEvent}
+            disabled={newEventTitle === '' | newEventDate === '' | newEventDescription}
+          >
+            Save Changes
+            </Button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+
   toggleEditPicture = () => {
     const { showEditPicture } = this.state;
     this.setState({ showEditPicture: !showEditPicture });
@@ -265,8 +375,29 @@ class Event extends React.Component {
     }
   }
 
+  getRSVPButton = () => {
+    const { rsvped } = this.state;
+    return (
+      <Button variant={rsvped ? "danger" : "primary"} onClick={this.handleMarkRSVP} >
+        {rsvped ? "cancel rsvp" : "rsvp"}
+      </Button>
+    )
+  }
+
+  getEditEventButton = () => {
+    return (
+      <Button size='sm' variant='outline-primary' onClick={this.toggleEditEvent}><FontAwesomeIcon icon={faEdit} /> Edit Event</Button>
+    )
+  }
+
+  onLocationSelect = (suggest) => {
+    const { newEventLocation, newEventCoordinates } = this.state;
+    newEventLocation = suggest.label;
+    newEventCoordinates = [suggest.location.lng, suggest.location.lat];
+  }
+
   render() {
-    const { event, openRsvpNotif, attendees, discussions, rsvped, picturePath } = this.state;
+    const { event, openRsvpNotif, attendees, discussions, rsvped, createdByCurrUser } = this.state;
     return (
       <div>
         <Modal show={openRsvpNotif} onHide={this.handleRsvpClose}>
@@ -285,9 +416,8 @@ class Event extends React.Component {
               <h4>{event.title}</h4>
             </Col>
             <Col>
-              <Button variant={rsvped ? "danger": "primary"} onClick={this.handleMarkRSVP} >
-              {rsvped ? "cancel rsvp" : "rsvp"}
-              </Button>
+              {createdByCurrUser ? this.getEditEventButton() : this.getRSVPButton()}
+              
             </Col>
           </Row>
           <h5>{event.location}</h5>
@@ -330,6 +460,7 @@ class Event extends React.Component {
                       </Button>
             </form>
           </Row>
+          {this.getEditEventModal()}
           {this.getEditPictureModal()}
         </Container>
       </div>
