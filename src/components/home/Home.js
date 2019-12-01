@@ -186,7 +186,7 @@ class Home extends React.Component {
                 </Button>
           </Modal.Footer>
         </Modal>
-        <Container>
+        <Container fluid>
           <Row>
             <Col sm={4}>
               <div>
@@ -199,13 +199,15 @@ class Home extends React.Component {
               </div>
             </Col>
             <Col sm={8}>
-              <Row>
-                <Map />
-              </Row>
               <Button
+                className="createEventButton"
                 variant="success"
+                size="sm"
                 onClick={this.handleAddNewEvent}
-              >Add Event</Button>
+                >Add Event</Button>
+              <div>
+                <Map/>
+              </div>
             </Col>
           </Row>
         </Container>
