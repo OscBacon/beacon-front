@@ -286,6 +286,27 @@ class Profile extends React.Component {
     )
   }
 
+  getProfilePicture() {
+    const { me, picturePath } = this.state;
+    if (me === true) {
+      return (
+        <div id='profilePictureDiv'>
+          <div
+            id='profilePictureHover'
+            onClick={this.toggleEditPicture}
+          >
+            Edit Picture
+                    </div>
+          <Image src={picturePath} id='profilePicture' roundedCircle />
+        </div>
+      )
+    } else {
+      return (
+        <Image src={picturePath} id='profilePicture' roundedCircle />
+      )
+    }
+  }
+
 
   render() {
     const { me, username, firstName, lastName, picturePath, currentEvent, pastEvents } = this.state;
@@ -294,15 +315,7 @@ class Profile extends React.Component {
         <Container>
           <Row>
             <Col xs={3} id='profile-info'>
-              <div id='profilePictureDiv'>
-                <div
-                  id='profilePictureHover'
-                  onClick={this.toggleEditPicture}
-                >
-                  Edit Picture
-                  </div>
-                <Image src={picturePath} id='profilePicture' roundedCircle />
-              </div>
+              {this.getProfilePicture()}
               <h2><FontAwesomeIcon icon={faUser} /> {username}</h2>
               {me ? this.getEditProfileButton() : this.getAddFriendButton()}
             </Col>
