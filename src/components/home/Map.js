@@ -37,7 +37,6 @@ class Map extends React.Component {
             data: {
               "type": "FeatureCollection",
               "features": events.map((event) => {
-                console.log("coordinates: ", event.coordinates)
                 return {
                   "type": "Feature",
                   "geometry": {
@@ -68,6 +67,7 @@ class Map extends React.Component {
             }
           });
         })
+        map.resize();
       });
 
       map.addControl(new mapboxgl.GeolocateControl({
@@ -76,9 +76,7 @@ class Map extends React.Component {
         },
         trackUserLocation: true
       }));
-    });
-
-    
+    });  
   }
 
   render() {
