@@ -10,7 +10,7 @@ import Modal from 'react-bootstrap/Modal';
 import { Link } from "react-router-dom";
 import { getEvent, updateEvent } from "../../api/events";
 import { getCurrentUser, getUser } from "../../api/users";
-import { getAttendingByEvent, addAttending } from "../../api/attending"
+import { getAttendingByEvent, addAttending, deleteAttending } from "../../api/attending"
 
 class Event extends React.Component {
   state = {
@@ -19,7 +19,8 @@ class Event extends React.Component {
     comment: '',
     attendees: [],
     discussions: [],
-    rsvped: false
+    rsvped: false,
+    curr_user_attending_id: false
   };
 
   componentDidMount() {
@@ -29,7 +30,6 @@ class Event extends React.Component {
   getEvents() {
     const id = this.props.match.params.id;
     getEvent(id).then((event) => {
-      console.log(event);
       this.setState({ event: event });
       this.getAttendents();
       this.getDiscussions();
@@ -44,6 +44,7 @@ class Event extends React.Component {
     const event_id = this.props.match.params.id;
     const attendings = []
     let rsvped = false;
+    let curr_user_attending_id = null
 
     const current_user = await getCurrentUser();
     getAttendingByEvent(event_id).then((attendees) => {
@@ -62,10 +63,11 @@ class Event extends React.Component {
 
         if (e.user_id == current_user._id) {
           rsvped = true;
+          curr_user_attending_id = e._id;
         }
 
       });
-      this.setState({ attendees: attendings, rsvped });
+      this.setState({ attendees: attendings, rsvped, curr_user_attending_id });
     });
   }
 
@@ -99,6 +101,7 @@ class Event extends React.Component {
   }
 
   handleMarkRSVP = async (event) => {
+    const { rsvped, curr_user_attending_id } = this.state;
     const event_id = this.props.match.params.id;
     // add the current user to the attendees table
     const curent_user = await getCurrentUser();
@@ -107,13 +110,15 @@ class Event extends React.Component {
         user_id: curent_user._id,
         event_id: event_id
       };
-      addAttending(attendee);
+      if (rsvped) {
+        deleteAttending(curr_user_attending_id).then(this.getAttendents());
+      } else {
+        addAttending(attendee).then(this.getAttendents());
+      }
     }
     else {
       console.log("session has expired")
     }
-    // update the attendee list
-    this.getAttendents();
     this.setState({ openRsvpNotif: true });
   }
 
@@ -146,7 +151,7 @@ class Event extends React.Component {
       <div>
         <Modal show={openRsvpNotif} onHide={this.handleRsvpClose}>
           <Modal.Header closeButton>
-            <Modal.Title>We got your RSVP!</Modal.Title>
+            <Modal.Title>{rsvped? "We got your RSVP!": "Canceled your RSVP!"}</Modal.Title>
           </Modal.Header>
           <Modal.Footer>
             <Button variant="primary" onClick={this.handleRsvpClose}>
@@ -160,8 +165,8 @@ class Event extends React.Component {
               <h4>{event.title}</h4>
             </Col>
             <Col>
-              <Button onClick={this.handleMarkRSVP} disabled={rsvped}>
-              {rsvped ? "rsvped" : "rsvp"}
+              <Button variant={rsvped ? "danger": "primary"} onClick={this.handleMarkRSVP} >
+              {rsvped ? "cancel rsvp" : "rsvp"}
               </Button>
             </Col>
           </Row>
