@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { getEvent, updateEvent } from "../../api/events";
 import { getCurrentUser, getUser } from "../../api/users";
 import { getAttendingByEvent, addAttending, deleteAttending } from "../../api/attending"
+import Dropzone from 'react-dropzone';
 
 class Event extends React.Component {
   state = {
@@ -20,17 +21,28 @@ class Event extends React.Component {
     attendees: [],
     discussions: [],
     rsvped: false,
-    curr_user_attending_id: false
+    curr_user_attending_id: false,
+    createdByCurrUser: false,
+
+    showEditPicture: false,
+    picturePath: 'https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg',
+    newPicturePath: '',
+    newEventPicture: ''
   };
 
   componentDidMount() {
     this.getEvents();
   }
 
-  getEvents() {
+  async getEvents() {
     const id = this.props.match.params.id;
+    const currUserId = (await getCurrentUser())._id;
     getEvent(id).then((event) => {
-      this.setState({ event: event });
+      this.setState({
+        event: event,
+        createdByCurrUser: currUserId === event.created_by,
+        picturePath: event.image ? event.image : this.state.picturePath
+      });
       this.getAttendents();
       this.getDiscussions();
     });
@@ -145,8 +157,116 @@ class Event extends React.Component {
     });
   }
 
+  toggleEditPicture = () => {
+    const { showEditPicture } = this.state;
+    this.setState({ showEditPicture: !showEditPicture });
+  }
+
+  saveEditPicture = () => {
+    const { newPicturePath, event } = this.state;
+    const new_event = { ...event };
+    new_event.image = newPicturePath;
+
+    updateEvent(event._id, new_event).then(this.getEvents());
+    this.setState({
+      picturePath: newPicturePath,
+      newPicturePath: null,
+      newEventPicture: null
+    })
+    return this.toggleEditPicture()
+  };
+
+  cancelEditPicture = () => {
+    this.setState({
+      newEventPicture: null,
+      newPicturePath: null
+    })
+
+    return this.toggleEditPicture();
+  }
+
+  getNewEventPicture = () => {
+    return (
+      <Image src={this.state.newPicturePath} id='newEventPicture' thumbnail />
+    );
+  }
+
+  getEditPictureModal = () => {
+    const { showEditPicture, newEventPicture } = this.state;
+
+    const handleDrop = (acceptedFiles) => {
+      const reader = new FileReader();
+
+      reader.readAsDataURL(acceptedFiles[0]);
+
+      reader.addEventListener("load", () => {
+        this.setState({
+          newPicturePath: reader.result,
+          newEventPicture: acceptedFiles[0]
+        });
+      });
+    }
+
+    return (
+      <Modal show={showEditPicture} onHide={this.cancelEditPicture}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Event Picture</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Dropzone
+            onDrop={handleDrop}
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section id='dropzone'>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Drag 'n' drop some files here, or click to select files</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+          {newEventPicture && this.getNewEventPicture()}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-danger" onClick={this.cancelEditPicture}>
+            Cancel
+            </Button>
+          <Button
+            variant="primary"
+            onClick={this.saveEditPicture}
+            disabled={newEventPicture === null}
+          >
+            Save Changes
+            </Button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+
+  getEventPicture = () => {
+    const { createdByCurrUser, picturePath } = this.state;
+
+    if (createdByCurrUser) {
+      return (
+        <div id="eventPictureDiv">
+          <div
+            id='eventPictureHover'
+            onClick={this.toggleEditPicture}
+          >
+            Edit Picture
+                  </div>
+          <Image id="eventPicture" src={picturePath} thumbnail />
+        </div>
+      )
+    } else {
+      return (
+        <Image id="eventPicture" src={picturePath} thumbnail /> 
+      )
+    }
+  }
+
   render() {
-    const { event, openRsvpNotif, attendees, discussions, rsvped } = this.state;
+    const { event, openRsvpNotif, attendees, discussions, rsvped, picturePath } = this.state;
     return (
       <div>
         <Modal show={openRsvpNotif} onHide={this.handleRsvpClose}>
@@ -172,7 +292,7 @@ class Event extends React.Component {
           </Row>
           <h5>{event.location}</h5>
           <Row>
-            <Image id="eventPhoto" src='https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg' thumbnail />
+            {this.getEventPicture()}
           </Row>
           <Row>
             <p>{event.description}</p>
@@ -210,6 +330,7 @@ class Event extends React.Component {
                       </Button>
             </form>
           </Row>
+          {this.getEditPictureModal()}
         </Container>
       </div>
 
