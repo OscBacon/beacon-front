@@ -147,3 +147,33 @@ export const logout = () => {
             console.log(error);
         });
 };
+
+// Patch the user
+export const updateUser = (user_id, user_info) => {
+  // the URL for the request
+  const url = `/users/${user_id}`;
+  // Create our request constructor with all the parameters we need
+  const request = new Request(domain_url + url, {
+    method: 'PATCH',
+    body: JSON.stringify(user_info),
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      credentials: 'include',
+      "Content-Type": "application/json",
+      mode: 'cors'
+    }
+  });
+
+  // Send the request with fetch()
+  return fetch(request)
+    .then(function (res) {
+      if (res.status === 200) {
+        return true
+      } else {
+        return false
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};
