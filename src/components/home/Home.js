@@ -171,7 +171,7 @@ class Home extends React.Component {
   render() {
     const { showEvents, openNewEventForm } = this.state;
     return (
-      <div>
+      <React.Fragment>
         <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>
           <Modal.Header closeButton>
             <Modal.Title>Add a new event</Modal.Title>
@@ -186,7 +186,7 @@ class Home extends React.Component {
                 </Button>
           </Modal.Footer>
         </Modal>
-        <Container fluid>
+        <Container fluid className="h-100 w-100">
           <Row>
             <Col sm={4}>
               <div>
@@ -211,7 +211,7 @@ class Home extends React.Component {
             </Col>
           </Row>
         </Container>
-      </div>
+      </React.Fragment>
     )
   }
 }

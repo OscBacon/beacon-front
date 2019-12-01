@@ -41,22 +41,24 @@ class Dashboard extends Component {
                 {!authenticated ?
                     <div/>
                     :  
-                    <div id="app-main" className="app-main">
-                        <div>
+                    <div id="app-main" className="app-main h-100 w-100">
+                        <div style={{height: "12vh"}}>
                             <Header history={this.props.history}/>
                         </div>
-                        <Switch>
-                            <Route path='/home' component={Home} />
-                            <Route path='/event/:id' component={Event} />
-                            <Route path='/profile/:id' component={Profile} />
-                            <Route path='/admin' component={Admin} />
-                            {window.isAdmin ?
-                                <Route path='/' component={Admin} />
-                                :
-                                <Route path='/' component={Home} />
-                            }
+                        <div style={{height: "88vh"}}>
+                            <Switch>
+                                <Route path='/home' component={Home} />
+                                <Route path='/event/:id' component={Event} />
+                                <Route path='/profile/:id' component={Profile} />
+                                <Route path='/admin' component={Admin} />
+                                {window.isAdmin ?
+                                    <Route path='/' component={Admin} />
+                                    :
+                                    <Route path='/' component={Home} />
+                                }
 
-                        </Switch>
+                            </Switch>
+                        </div>
                     </div>
                 }
             </Fragment>

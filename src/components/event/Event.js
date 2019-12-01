@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { getEvent, updateEvent } from "../../api/events";
 import { getCurrentUser, getUser } from "../../api/users";
 import { getAttendingByEvent, addAttending, deleteAttending } from "../../api/attending"
+import {getComments, addComment} from '../../api/comments'
 import Dropzone from 'react-dropzone';
 import TextField from '@material-ui/core/TextField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,7 +27,7 @@ class Event extends React.Component {
     discussions: [],
     rsvped: false,
     curr_user_attending_id: false,
-    createdByCurrUser: false,
+    currUser: {},
 
     showEditEvent: false,
     newEventTitle: "",
@@ -42,100 +43,77 @@ class Event extends React.Component {
   };
 
   componentDidMount() {
-    this.getEvents();
+    this.fetch();
   }
 
-  async getEvents() {
+  async fetch() {
+    
+    const currUser = await getCurrentUser();
+    const user = {currUser};
+    const event = await this.reloadEvent();
+    
+    this.setState(Object.assign(user, event), this.fetchRest)
+  
+  }
+
+  async fetchRest() {
+    console.log(this.getDiscussions());
+    const discussions = await this.getDiscussions();
+    const attending = await this.getAttendents();
+    this.setState(Object.assign(discussions, attending));
+  }
+  
+  async reloadEvent(){
     const id = this.props.match.params.id;
-    const currUserId = (await getCurrentUser())._id;
-    getEvent(id).then((event) => {
-      this.setState({
-        event: event,
-        createdByCurrUser: currUserId === event.created_by,
-        picturePath: event.image ? event.image : this.state.picturePath,
-        newEventTitle: event.title,
-        newEventDate: event.date,
-        newEventLocation: event.location,
-        newEventDescription: event.description,
-        newEventCoordinates: event.coordinates,
-      });
-      this.getAttendents();
-      this.getDiscussions();
-    });
-  }
+    const event = await getEvent(id);
 
-  getEventTemplate() {
-    const { event } = this.state;
+    return {
+      event: event,
+      picturePath: event.image ? event.image : this.state.picturePath,
+      newEventTitle: event.title,
+      newEventDate: event.date,
+      newEventLocation: event.location,
+      newEventDescription: event.description,
+      newEventCoordinates: event.coordinates,
+    }
   }
 
   async getAttendents() {
+    const {currUser} = this.state;
     const event_id = this.props.match.params.id;
     const attendings = []
     let rsvped = false;
     let curr_user_attending_id = null
 
-    const current_user = await getCurrentUser();
     getAttendingByEvent(event_id).then((attendees) => {
-      attendees.forEach((e) => {
-        //fetch the user by their user_id
-        getUser(e.user_id).then((user) => {
-          attendings.push(
-            <Col md={1}>
-              <Image src={user.avatar} id="userProfileSmallPic" roundedCircle />
-              <p>
-                <Link id='userProfileName' to='/profile'>{user.user_name}</Link>
-              </p>
-            </Col>
-          );
-        });
+      attendees.forEach((e, index) => {
+        const user = e.user;
 
-        if (e.user_id == current_user._id) {
+        if (user._id == currUser._id) {
           rsvped = true;
           curr_user_attending_id = e._id;
         }
 
       });
-      this.setState({ attendees: attendings, rsvped, curr_user_attending_id });
+      return { attendees, rsvped, curr_user_attending_id };
     });
   }
 
   getDiscussions() {
     const { event } = this.state;
-    if (event.length == 0 || event == null) {
-      return
-    }
 
-    const discussions = []
-    event.comments.forEach((e) => {
-      console.log("comment", e)
-      getUser(e.user_id).then((user) => {
-        discussions.push(
-          <tr>
-            <td>
-              <Image src={user.avatar} id="userProfileSmallPic" roundedCircle />
-              <p>
-                <Link id='userProfileName' to={`/profile/${user._id}`}>{user.user_name}</Link>
-              </p>
-            </td>
-            <td>
-              <p>{e.comment}</p>
-            </td>
-          </tr>
-        );
-      });
-      console.log(discussions)
-      this.setState({ discussions })
+    return getComments(event._id).then((comments) => {
+      return { discussions: comments };
     });
   }
 
   handleMarkRSVP = async (event) => {
-    const { rsvped, curr_user_attending_id } = this.state;
+    const { rsvped, curr_user_attending_id, currUser } = this.state;
     const event_id = this.props.match.params.id;
     // add the current user to the attendees table
-    const curent_user = await getCurrentUser();
-    if (curent_user) {
+    if (currUser) {
       const attendee = {
-        user_id: curent_user._id,
+        user_id: currUser._id,
         event_id: event_id
       };
       if (rsvped) {
@@ -159,18 +137,17 @@ class Event extends React.Component {
   }
 
   handleCommentSubmit = () => {
-    const { event, comment } = this.state;
+    const { event, comment, currUser } = this.state;
     // get the current_user
-    getCurrentUser().then((user) => {
-      const new_comment = {
-        user_id: user._id,
-        comment: comment
-      }
-      event.comments.push(new_comment);
-      updateEvent(event._id, event).then((status) => {
-        console.log(status)
-        this.getEvents();
-        this.getDiscussions();
+    const newComment = {
+      text: comment
+    }
+
+    addComment(event._id, newComment).then((status) => {
+      console.log(status)
+      this.getDiscussions().then((discussions) => {
+        console.log("UPDATED COMMENTS", discussions)
+        this.setState(discussions)
       });
     });
   }
@@ -189,17 +166,11 @@ class Event extends React.Component {
     new_event.coordinates = newEventCoordinates;
     new_event.description = newEventDescription;
 
-    updateEvent(event._id, new_event).then(this.getEvents());
-    this.setState({
-      event: {...new_event},
-      newEventTitle: null,
-      newEventDate: null,
-      newEventLocation: null,
-      newEventCoordinates: null,
-      newEventDescription: null
+    updateEvent(event._id, new_event).then((result) => {
+      this.reloadEvent().then((event) => {
+        this.setState(event, this.toggleEditEvent)
+      })
     });
-
-    return this.toggleEditEvent();
   }
 
   cancelEditEvent = () => {
@@ -279,13 +250,18 @@ class Event extends React.Component {
     const new_event = { ...event };
     new_event.image = newPicturePath;
 
-    updateEvent(event._id, new_event).then(this.getEvents());
-    this.setState({
-      picturePath: newPicturePath,
-      newPicturePath: null,
-      newEventPicture: null
-    })
-    return this.toggleEditPicture()
+    updateEvent(event._id, new_event).then(() => {
+      this.reloadEvent().then((event) => {
+        this.setState(Object.assign(
+          {
+          picturePath: newPicturePath,
+          newPicturePath: null,
+          newEventPicture: null
+          },
+          event,
+        ), this.toggleEditPicture)
+      })
+    });
   };
 
   cancelEditPicture = () => {
@@ -356,9 +332,9 @@ class Event extends React.Component {
   }
 
   getEventPicture = () => {
-    const { createdByCurrUser, picturePath } = this.state;
+    const { currUser, picturePath, event } = this.state;
 
-    if (createdByCurrUser) {
+    if (currUser._id === event.created_by) { // created by current user
       return (
         <div id="eventPictureDiv">
           <div
@@ -399,7 +375,10 @@ class Event extends React.Component {
   }
 
   render() {
-    const { event, openRsvpNotif, attendees, discussions, rsvped, createdByCurrUser } = this.state;
+    const { event, openRsvpNotif, attendees, discussions, rsvped, currUser } = this.state;
+
+    const createdByCurrUser = currUser._id === event.created_by;
+
     return (
       <div>
         <Modal show={openRsvpNotif} onHide={this.handleRsvpClose}>
@@ -433,7 +412,16 @@ class Event extends React.Component {
             <h5>Attending</h5>
           </Row>
           <Row id="textAlignedCentre" >
-            {attendees}
+          {      
+            attendees.map((attending, index) => 
+              <Col key={`attending_${index}`} md={1}>
+                <Image src={attending.user.avatar} id="userProfileSmallPic" roundedCircle />
+                <p>
+                  <Link id='userProfileName' to='/profile'>{attending.user.user_name}</Link>
+                </p>
+              </Col>
+            )
+          }
           </Row>
           <Row>
             <h5>Discussions</h5>
@@ -442,7 +430,21 @@ class Event extends React.Component {
             <div>
               <Table bordered hover>
                 <tbody>
-                  {discussions}
+                  {
+                    discussions.map((comment, index) => 
+                      <tr>
+                        <td>
+                          <Image src={comment.author.avatar} id="userProfileSmallPic" roundedCircle />
+                          <p>
+                            <Link id='userProfileName' to={`/profile/${comment.author._id}`}>{comment.author.user_name}</Link>
+                          </p>
+                        </td>
+                        <td>
+                          <p>{comment.text}</p>
+                        </td>
+                      </tr>
+                    )
+                  }
                 </tbody>
               </Table>
             </div >
