@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faUser, faEdit, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import TextField from '@material-ui/core/TextField';
 import Dropzone from 'react-dropzone';
-import { getUser, getCurrentUser } from '../../api/users'
+import { getUser, getCurrentUser, updateUser } from '../../api/users'
 import { getAttendingByUser } from '../../api/attending'
 import { Link } from "react-router-dom";
 import { getEvent } from '../../api/events';
@@ -18,6 +18,7 @@ import '../../styles/profile.css'
 
 class Profile extends React.Component {
   state = {
+    user: null,
     id: null,
     username: null,
     firstName: null,
@@ -54,6 +55,7 @@ class Profile extends React.Component {
     
     userPromise.then((user) => {
       this.setState({
+        user: user,
         id: user._id,
         username: user.user_name,
         firstName: user.first_name,
@@ -193,9 +195,13 @@ toggleEditPicture = () => {
 }
 
 saveEditPicture = () => {
-  const { newPicturePath } = this.state;
+  const { newPicturePath, id, user } = this.state;
+  const new_user = {...user};
+  new_user.avatar = newPicturePath
 
-  // TODO: API Call to update user picture
+  updateUser(id, new_user).then(
+    this.getProfile()
+  )
   this.setState({
     picturePath: newPicturePath,
     newPicturePath: null,
