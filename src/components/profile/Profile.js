@@ -203,7 +203,6 @@ saveEditPicture = () => {
     this.getProfile()
   )
   this.setState({
-    picturePath: newPicturePath,
     newPicturePath: null,
     newProfilePicture: null
   })
