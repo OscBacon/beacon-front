@@ -3,3 +3,11 @@
     text-decoration: none;
     color: #007bff;
 }
+
+.createEventButton {
+    position: relative;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+    
+}

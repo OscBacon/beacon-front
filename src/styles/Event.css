@@ -3,11 +3,14 @@
     height: 50px;  
 }
 
-#eventPhoto {
-    max-width: 1000px;  
+#eventPicture {
+    /* max-width: 1000px;  
     max-height: 1000px;
     min-width: 500px; 
-    max-width: 300px; 
+    max-width: 300px;  */
+    height: 300px;
+    width: 720px;
+    object-fit: cover;
 }
 
 #textAlignedCentre {
@@ -18,4 +21,49 @@
     font-weight: bold;
     text-decoration: none;
     color: black;
+}
+
+#newEventPicture {
+    width: 300px;
+    height: 720px;
+    object-fit: cover;
+}
+
+#eventPictureDiv {
+    overflow: hidden;
+    display: inline-block;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+#eventPictureHover {
+    height: 300px;
+    width: 720px;
+    position: absolute;
+    background-color: #00000099;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+
+}
+
+#eventPictureDiv #eventPictureHover {
+    opacity: 0;
+}
+
+#eventPictureDiv:hover #eventPictureHover {
+    opacity: 1;
+}
+
+#dropzone {
+    cursor: pointer;
+    background-color: #00000022;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    margin-bottom: 10px;
+
 }

@@ -20,3 +20,18 @@
 .App-link {
   color: #09d3ac;
 }
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.geosuggest {
+    display: inline-block !important;
+}
+
+.geosuggest__suggests {
+    text-decoration: underline;
+    list-style: none;
+}
