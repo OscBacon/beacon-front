@@ -28,10 +28,11 @@ class Map extends React.Component {
 
   refreshMap(){
     const {events} = this.props;
+    const {loaded} = this.state;
 
     console.log("refreshing map", events)
 
-    if(this.map){
+    if(loaded){
       const data = {
         "type": "FeatureCollection",
         "features": events.map((event) => {
@@ -92,7 +93,7 @@ class Map extends React.Component {
         });
       })
 
-      this.setState({loaded: true})
+      this.setState({loaded: true}, this.refreshMap)
     });
 
     this.map.addControl(new mapboxgl.GeolocateControl({

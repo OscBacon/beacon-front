@@ -18,6 +18,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import Geosuggest from 'react-geosuggest';
 
+const defaultPicture = 'https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg';
+
 class Event extends React.Component {
   state = {
     event: {},
@@ -37,7 +39,7 @@ class Event extends React.Component {
     newEventCoordinates: [],
 
     showEditPicture: false,
-    picturePath: 'https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg',
+    picturePath: defaultPicture,
     newPicturePath: '',
     newEventPicture: ''
   };
@@ -69,7 +71,7 @@ class Event extends React.Component {
 
     return {
       event: event,
-      picturePath: event.image ? event.image : this.state.picturePath,
+      picturePath: event.image ? event.image : defaultPicture,
       newEventTitle: event.title,
       newEventDate: event.date,
       newEventLocation: event.location,

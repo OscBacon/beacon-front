@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { getEvents, addEvent } from "../../api/events"
 import Map from './Map';
 import Geosuggest from 'react-geosuggest';
+import Dropzone from 'react-dropzone';
 
 class Home extends React.Component {
   state = {
@@ -23,7 +24,8 @@ class Home extends React.Component {
       date: "",
       location: "",
       description: "",
-      coordinates: []
+      coordinates: [],
+      image: null,
     }
   }
 
@@ -83,7 +85,28 @@ class Home extends React.Component {
     );
   }
 
+  handleDrop = (acceptedFiles) => {
+    const reader = new FileReader();
+
+    reader.readAsDataURL(acceptedFiles[0]);
+
+    reader.addEventListener("load", () => {
+      const {newEvent} = this.state;
+      newEvent.image = reader.result;
+      this.setState(newEvent);
+    });
+  }
+
+  getNewEventPicture = () => {
+    return (
+      <Image src={this.state.newEvent.image} id='newEventPicture' thumbnail />
+    );
+  }
+
   getNewEventForm() {
+
+    const {newEvent} = this.state;
+
     return (
       <div>
         <Row>
@@ -119,7 +142,19 @@ class Home extends React.Component {
           />
         </Row>
         <Row>
-          <Button>Upload Image</Button>
+          <Dropzone
+            onDrop={this.handleDrop}
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section id='dropzone'>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Drag 'n' drop some files here, or click to select files</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+          {newEvent.image && this.getNewEventPicture()}
         </Row>
       </div>
     );
@@ -134,14 +169,22 @@ class Home extends React.Component {
   }
 
   handleNewEventClose = () => {
-    this.setState({ openNewEventForm: false });
+    this.setState({ openNewEventForm: false, newEvent: {
+      title: "",
+      date: "",
+      location: "",
+      description: "",
+      coordinates: [],
+      image: null,
+    }  
+    });
   }
 
   handleNewEventSave = () => {
     const { newEvent } = this.state;
     console.log(newEvent)
     addEvent(newEvent).then(status => this.getAllEvents());
-    this.setState({ openNewEventForm: false });
+    this.handleNewEventClose();
   }
 
   inputEventTitle = (event) => {
