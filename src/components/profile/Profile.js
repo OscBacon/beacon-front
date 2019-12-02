@@ -13,8 +13,9 @@ import Dropzone from 'react-dropzone';
 import { getUser, getCurrentUser, updateUser } from '../../api/users'
 import { getAttendingByUser } from '../../api/attending'
 import { Link } from "react-router-dom";
-import { getEvent } from '../../api/events';
+import { getUsersEvents } from '../../api/events';
 import '../../styles/profile.css'
+import ProfilePicture from '../shared/ProfilePicture';
 
 class Profile extends React.Component {
   state = {
@@ -34,27 +35,48 @@ class Profile extends React.Component {
     showEditProfile: false,
     showEditPicture: false,
 
-    currentEvent: 'Krispy Kreme Donut Sale',
-    pastEvents: []
+    attendings: [],
+    events: []
   };
 
   componentDidMount() {
     this.getProfile();
-
+  }
+  
+  componentDidUpdate(prevProps){
+    if(this.props.match.params.id !== prevProps.match.params.id){
+      this.getProfile();
+    }
   }
 
   async getProfile() {
+    const user = await this.reloadUser();
+
+    if(!user){
+      this.props.history.push("/home");
+    }
+
+    this.setState(user, async () => {
+      const events = await this.getUserEvents();
+      const their_events = await this.getUsersOwnEvents();
+      this.setState(Object.assign(events, their_events));
+    })
+  }
+
+  async reloadUser(){
     const id = this.props.match.params.id;
+    const newState = {};
 
     let userPromise;
     if (id === "me") {
       userPromise = getCurrentUser();
+      newState.me = true;
     } else {
       userPromise = getUser(id);
     }
 
-    userPromise.then((user) => {
-      this.setState({
+    return userPromise.then((user) => {
+      return Object.assign(newState, {
         user: user,
         id: user._id,
         username: user.user_name,
@@ -64,41 +86,38 @@ class Profile extends React.Component {
         newUsername: user.user_name,
         newFirstName: user.first_name,
         newLastName: user.last_name,
-      });
+      })
+    }).catch((error) => {
+      return null;
+    });
+  } 
 
-      getCurrentUser().then(curr_user => {
-        if (curr_user._id == user._id) {
-          this.setState({ me: true })
-        }
-      });
-
-      this.getUserEvents();
+  getUserEvents() {
+    return getAttendingByUser(this.state.id).then((attendings) => {
+      return {attendings}
+    }).catch(error => {
+      console.log("failed to fetch the attended events", error)
     });
   }
 
-  getUserEvents() {
-    const events = [];
-    getAttendingByUser(this.state.id).then((attendings) => {
-      attendings.forEach((attending) => {
-        getEvent(attending.event_id).then(event => {
-          events.push(event);
-          this.setState({ pastEvents: events })
-        });
-      });
+  getUsersOwnEvents() {
+    return getUsersEvents(this.state.id).then((events) => {
+      return {events}
     }).catch(error => {
       console.log("failed to fetch the events", error)
     });
   }
 
   getPastEvents() {
-    const { pastEvents } = this.state;
+    const { attendings } = this.state;
     const pastEventTemplate = []
-    pastEvents.forEach((event) => {
+    attendings.forEach((attending, index) => {
       pastEventTemplate.push(
-        <tr>
-          <th>{event.date}</th>
-          <th>{event.title}</th>
-          <th>{event.description}</th>
+        <tr key={`event_${index}`}>
+          <th>{(new Date(Date.parse(attending.event.date))).toLocaleString()}</th>
+          <th>{attending.event.title}</th>
+          <th>{attending.event.description}</th>
+          <th> <Link id='currEvent' to={`/profile/${attending.event.created_by}`}>{attending.event.created_by}</Link></th>
         </tr>
       )
     })
@@ -114,17 +133,15 @@ class Profile extends React.Component {
     this.setState({ showEditProfile: !showEditProfile });
   };
 
-  saveEditProfile = () => {
-    const { newUsername, newFirstName, newLastName } = this.state;
-
-    // TODO: API Call to update user;
-    this.setState({
-      username: newUsername,
-      firstName: newFirstName,
-      lastName: newLastName,
-    });
-
-    return this.toggleEditProfile();
+  saveEditProfile = async () => {
+    const { newUsername, newFirstName, newLastName, user } = this.state;
+    const new_user = { ...user };
+    new_user.user_name = newUsername;
+    new_user.first_name = newFirstName;
+    new_user.last_name = newLastName;
+    await updateUser(user._id, new_user);
+    const reloaded = await this.reloadUser();
+    this.setState(reloaded, this.toggleEditProfile);
   }
 
   cancelEditProfile = () => {
@@ -297,19 +314,19 @@ class Profile extends React.Component {
           >
             Edit Picture
                     </div>
-          <Image src={picturePath} id='profilePicture' roundedCircle />
+        <ProfilePicture src={picturePath} id="profilePicture"/>
         </div>
       )
     } else {
       return (
-        <Image src={picturePath} id='profilePicture' roundedCircle />
+        <ProfilePicture src={picturePath} id="profilePicture"/>
       )
     }
   }
 
 
   render() {
-    const { me, username, firstName, lastName, picturePath, currentEvent, pastEvents } = this.state;
+    const { me, username, firstName, lastName, picturePath, events } = this.state;
     return (
       <div>
         <Container>
@@ -321,20 +338,28 @@ class Profile extends React.Component {
             </Col>
             <Col>
               <h1>{firstName} {lastName}</h1>
-              <p>
-                Current Event: <Link id='currEvent' to='/event'>{currentEvent}</Link>
-              </p>
+              <div>
+                {me ? "My Current Events" : "Current Events:"}
+              </div>
+              {
+                events.map((event, index) => 
+                  <div key={`event_${index}`}>
+                     <Link id='currEvent' to={`/event/${event._id}`}>{event.title}</Link>
+                  </div>
+                )
+              }
             </Col>
           </Row>
           <Row>
             <Col>
-              <h1>History</h1>
+              <h1>Attending Events</h1>
               <Table bordered hover>
                 <thead>
                   <tr>
                     <th>Date</th>
                     <th>Title</th>
                     <th>Description</th>
+                    <th>Host</th>
                   </tr>
                 </thead>
                 <tbody>

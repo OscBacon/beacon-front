@@ -17,6 +17,7 @@ import TextField from '@material-ui/core/TextField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import Geosuggest from 'react-geosuggest';
+import ProfilePicture from '../shared/ProfilePicture';
 
 const defaultPicture = 'https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg';
 
@@ -28,7 +29,6 @@ class Event extends React.Component {
     attendees: [],
     discussions: [],
     rsvped: false,
-    curr_user_attending_id: false,
     currUser: {},
 
     showEditEvent: false,
@@ -59,7 +59,6 @@ class Event extends React.Component {
   }
 
   async fetchRest() {
-    console.log(this.getDiscussions());
     const discussions = await this.getDiscussions();
     const attending = await this.getAttendents();
     this.setState(Object.assign(discussions, attending));
@@ -85,19 +84,16 @@ class Event extends React.Component {
     const event_id = this.props.match.params.id;
     const attendings = []
     let rsvped = false;
-    let curr_user_attending_id = null
 
-    getAttendingByEvent(event_id).then((attendees) => {
+    return getAttendingByEvent(event_id).then((attendees) => {
       attendees.forEach((e, index) => {
         const user = e.user;
-
         if (user._id === currUser._id) {
           rsvped = true;
-          curr_user_attending_id = e._id;
         }
 
       });
-      return { attendees, rsvped, curr_user_attending_id };
+      return { attendees, rsvped };
     });
   }
 
@@ -110,24 +106,29 @@ class Event extends React.Component {
   }
 
   handleMarkRSVP = async (event) => {
-    const { rsvped, curr_user_attending_id, currUser } = this.state;
+    const { rsvped, currUser } = this.state;
     const event_id = this.props.match.params.id;
     // add the current user to the attendees table
     if (currUser) {
-      const attendee = {
-        user_id: currUser._id,
-        event_id: event_id
-      };
       if (rsvped) {
-        deleteAttending(curr_user_attending_id).then(this.getAttendents());
+        await deleteAttending(currUser._id, event_id);
       } else {
-        addAttending(attendee).then(this.getAttendents());
+        const attendee = {
+          user: currUser._id,
+          event: event_id
+        };
+        await addAttending(attendee);
       }
     }
     else {
       console.log("session has expired")
+      return;
     }
-    this.setState({ openRsvpNotif: true });
+
+    const newState = { openRsvpNotif: true, rsvped: !rsvped };
+    const attendees = await this.getAttendents();
+    console.log(attendees);
+    this.setState(Object.assign(newState, attendees));
   }
 
   handleRsvpClose = (event) => {
@@ -146,7 +147,6 @@ class Event extends React.Component {
     }
 
     addComment(event._id, newComment).then((status) => {
-      console.log(status)
       this.getDiscussions().then((discussions) => {
         console.log("UPDATED COMMENTS", discussions)
         this.setState(discussions)
@@ -407,6 +407,12 @@ class Event extends React.Component {
             </Col>
           </Row>
           <h5>{event.location}</h5>
+          {event.created_by && 
+            <div className="mt-2">
+                <h5 className="d-inline-block mr-2">Host:</h5>
+                <Link id='currEvent' to={`/profile/${event.created_by._id}`}>{event.created_by.user_name}</Link>
+            </div>
+          }
           <Row>
             {this.getEventPicture()}
           </Row>
@@ -420,7 +426,7 @@ class Event extends React.Component {
           {      
             attendees.map((attending, index) => 
               <Col key={`attending_${index}`} md={1}>
-                <Image src={attending.user.avatar} id="userProfileSmallPic" roundedCircle />
+                <ProfilePicture src={attending.user.avatar} id="userProfileSmallPic" />
                 <p>
                   <Link id='userProfileName' to='/profile'>{attending.user.user_name}</Link>
                 </p>
@@ -437,9 +443,9 @@ class Event extends React.Component {
                 <tbody>
                   {
                     discussions.map((comment, index) => 
-                      <tr>
+                      <tr key={`comment_${index}`}>
                         <td>
-                          <Image src={comment.author.avatar} id="userProfileSmallPic" roundedCircle />
+                          <ProfilePicture src={comment.author.avatar} id="userProfileSmallPic"/>
                           <p>
                             <Link id='userProfileName' to={`/profile/${comment.author._id}`}>{comment.author.user_name}</Link>
                           </p>

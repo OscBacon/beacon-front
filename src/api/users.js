@@ -43,7 +43,7 @@ export const getUser = (user_id) => {
       if (res.status === 200) {
         return res.json();
       } else {
-        alert("Could not get the event");
+        return Promise.reject(res.error);
       }
     })
     .catch(error => {
@@ -98,12 +98,12 @@ export const getCurrentUser = () => {
     return fetch(request)
         .then(function(res) {
             if(res.status !== 200){
-                return null;
+                return Promise.reject(res.error);
             }
             return res.json()
         })
         .catch(error => {
-            console.log(error);
+          return Promise.reject(error ? error.message : "No current user");
         });
 };
 
@@ -167,9 +167,9 @@ export const updateUser = (user_id, user_info) => {
   const request = new Request(domain_url + url, {
     method: 'PATCH',
     body: JSON.stringify(user_info),
+    credentials: 'include',
     headers: {
       Accept: "application/json, text/plain, */*",
-      credentials: 'include',
       "Content-Type": "application/json",
       mode: 'cors'
     }

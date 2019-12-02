@@ -21,15 +21,16 @@ class Dashboard extends Component {
     }
 
     async componentDidMount() {
-        const current = await getCurrentUser();
-        console.log("Logged on", current);
-        if(!current){
+        try{
+            const current = await getCurrentUser();
+            console.log("Logged on", current);
+            this.setState({authenticated: true});
+        }
+        catch(e){
+            console.log("Not Logged On");
             this.setState({authenticated: false}, () => {
                 this.props.history.push('/login');
             })
-        }
-        else{
-            this.setState({authenticated: true});
         }
     }
 

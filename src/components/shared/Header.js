@@ -6,6 +6,7 @@ import Col from "react-bootstrap/Col";
 import {Link} from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import {logout, getCurrentUser} from "../../api/users";
+import ProfilePicture from "./ProfilePicture";
 
 export default class Header extends React.Component {
     constructor(props) {
@@ -17,7 +18,7 @@ export default class Header extends React.Component {
 
     async componentDidMount() {
         const user = await getCurrentUser();
-        this.setState({user: user});
+        this.setState({user});
     }
 
     onLogOut = () => {
@@ -28,6 +29,10 @@ export default class Header extends React.Component {
 
     render() {
         const {user} = this.state;
+
+        if(!user){
+            return  <Navbar bg="light" expand="lg" className="mb-3"/>
+        }
 
         return (
             <Navbar bg="light" expand="lg" className="mb-3">
@@ -51,8 +56,8 @@ export default class Header extends React.Component {
                             Log Out
                         </Button>
                         <Link to="/profile/me">
-                            <Image
-                                src={"https://scontent-yyz1-1.xx.fbcdn.net/v/t1.0-9/62357713_2486535374699741_4082721466909458432_n.jpg?_nc_cat=110&_nc_oc=AQntc7psN0850o8haE0EtEBxY2C9iSfug6M6oiroGSPLLdvkzyw1CSQsxnlOvqHQ5Ws&_nc_ht=scontent-yyz1-1.xx&oh=607a0e7e4f6d30eb7ad87d77685723cc&oe=5E6572C1"} id="userProfileSmallPic" roundedCircle
+                            <ProfilePicture
+                                src={user.image} id="userProfileSmallPic" roundedCircle
                             />
                         </Link>
                     </Nav>

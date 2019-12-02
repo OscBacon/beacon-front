@@ -23,9 +23,12 @@ class Login extends React.Component {
   }
 
   async componentDidMount(){
-    const currUser = await getCurrentUser();
-    if(currUser){
+    try{
+      const currUser = await getCurrentUser();
       this.props.history.push("/home");
+    }
+    catch(e){
+      console.log(e.message);
     }
   }
 

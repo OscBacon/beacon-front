@@ -100,13 +100,22 @@ export const addAttending = (attending) => {
 };
 
 // Delete request to add a new attending
-export const deleteAttending = (attending_id) => {
+export const deleteAttending = (user_id, event_id) => {
     // the URL for the request
-    const url = `/attendings/${attending_id}`;
+    const url = `/attendings`;
     
     // Create our request constructor with all the parameters we need
     const request = new Request(domain_url + url, {
       method: "DELETE",
+      credentials: "include",
+      headers: {
+        Accept: "application/json, text/plain",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user: user_id,
+        event: event_id
+      })
     });
   
     // Send the request with fetch()

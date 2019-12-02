@@ -52,6 +52,24 @@ export const getEvent = (event_id) => {
     });
 };
 
+export const getUsersEvents = (user_id) =>  {
+  const url = `/events/users/${user_id}`; 
+
+  const request = new Request(domain_url + url, global_options);
+
+  return fetch(request)
+    .then(res => {
+      if (res.status === 200) {
+        return res.json();
+      } else {
+        return Promise.reject("Couldn't find event");
+      }
+    })
+    .catch(error => {
+      alert(error.message)
+    });
+}
+
 // POST request to add a new event
 export const addEvent = (event) => {
   // the URL for the request
