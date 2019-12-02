@@ -336,7 +336,7 @@ class Event extends React.Component {
   getEventPicture = () => {
     const { currUser, picturePath, event } = this.state;
 
-    if (currUser._id === event.created_by) { // created by current user
+    if (event.created_by && currUser._id === event.created_by._id) { // created by current user
       return (
         <div id="eventPictureDiv">
           <div
@@ -382,7 +382,7 @@ class Event extends React.Component {
   render() {
     const { event, openRsvpNotif, attendees, discussions, rsvped, currUser } = this.state;
 
-    const createdByCurrUser = currUser._id === event.created_by;
+    const createdByCurrUser = event.created_by ? currUser._id === event.created_by._id : false;
 
     return (
       <div>
