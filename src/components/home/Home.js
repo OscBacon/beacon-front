@@ -91,7 +91,7 @@ class Home extends React.Component {
     reader.readAsDataURL(acceptedFiles[0]);
 
     reader.addEventListener("load", () => {
-      const {newEvent} = this.state;
+      const { newEvent } = this.state;
       newEvent.image = reader.result;
       this.setState(newEvent);
     });
@@ -105,7 +105,7 @@ class Home extends React.Component {
 
   getNewEventForm() {
 
-    const {newEvent} = this.state;
+    const { newEvent } = this.state;
 
     return (
       <div>
@@ -119,17 +119,21 @@ class Home extends React.Component {
         </Row>
         <Row>
           <TextField
+            id="datetime-local"
             label="Date"
-            margin="normal"
-            variant="filled"
+            type="datetime-local"
+            defaultValue={(new Date(Date.now())).toISOString().slice(0, -8)}
+            InputLabelProps={{
+              shrink: true,
+            }}
             onInput={this.inputEventDate}
           />
         </Row>
         <Row>
-          <Geosuggest 
+          <Geosuggest
             label="Location"
             className="MuiInputBase-root MuiFilledInput-root MuiFilledInput-underline MuiInputBase-formControl"
-            inputClassName="MuiInputBase-input MuiFilledInput-input"  
+            inputClassName="MuiInputBase-input MuiFilledInput-input"
             onSuggestSelect={this.onLocationSelect}
           />
         </Row>
@@ -169,14 +173,15 @@ class Home extends React.Component {
   }
 
   handleNewEventClose = () => {
-    this.setState({ openNewEventForm: false, newEvent: {
-      title: "",
-      date: "",
-      location: "",
-      description: "",
-      coordinates: [],
-      image: null,
-    }  
+    this.setState({
+      openNewEventForm: false, newEvent: {
+        title: "",
+        date: "",
+        location: "",
+        description: "",
+        coordinates: [],
+        image: null,
+      }
     });
   }
 
@@ -207,14 +212,14 @@ class Home extends React.Component {
 
   onLocationSelect = (suggest) => {
     const { newEvent } = this.state;
-    if(suggest){
+    if (suggest) {
       newEvent.location = suggest.label;
       newEvent.coordinates = [suggest.location.lng, suggest.location.lat];
     }
   }
 
   render() {
-    const { showEvents, openNewEventForm, events} = this.state;
+    const { showEvents, openNewEventForm, events } = this.state;
 
     return (
       <React.Fragment>
@@ -235,7 +240,7 @@ class Home extends React.Component {
         <Container fluid>
           <Row>
             <Col sm={4}>
-              <div style={{overflowY: "scroll", height:"100vh"}}>
+              <div style={{ overflowY: "scroll", height: "100vh" }}>
                 <Button
                   onClick={this.handleEventToggle}
                 >Show Events</Button>
@@ -250,9 +255,9 @@ class Home extends React.Component {
                 variant="success"
                 size="sm"
                 onClick={this.handleAddNewEvent}
-                >Add Event</Button>
+              >Add Event</Button>
               <div>
-                <Map events={events}/>
+                <Map events={events} />
               </div>
             </Col>
           </Row>

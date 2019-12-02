@@ -205,11 +205,16 @@ class Event extends React.Component {
             onInput={(e) => this.setState({ newEventTitle: e.target.value})}
           />
           <TextField
+            id="datetime-local"
             onInput={(e) => this.setState({ newEventDate: e.target.value })}
             label="Date"
             margin="normal"
             variant="filled"
+            type="datetime-local"
             value={newEventDate}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           <Geosuggest
             label="Location"
@@ -403,7 +408,6 @@ class Event extends React.Component {
             </Col>
             <Col>
               {createdByCurrUser ? this.getEditEventButton() : this.getRSVPButton()}
-              
             </Col>
           </Row>
           <h5>{event.location}</h5>
@@ -413,6 +417,7 @@ class Event extends React.Component {
                 <Link id='currEvent' to={`/profile/${event.created_by._id}`}>{event.created_by.user_name}</Link>
             </div>
           }
+          <h5>{(new Date(Date.parse(event.date))).toLocaleString()}</h5>
           <Row>
             {this.getEventPicture()}
           </Row>
