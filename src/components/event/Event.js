@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Link } from "react-router-dom";
 import { getEvent, updateEvent } from "../../api/events";
-import { getCurrentUser, getUser } from "../../api/users";
+import { getCurrentUser } from "../../api/users";
 import { getAttendingByEvent, addAttending, deleteAttending } from "../../api/attending"
 import {getComments, addComment} from '../../api/comments'
 import Dropzone from 'react-dropzone';
@@ -89,7 +89,7 @@ class Event extends React.Component {
       attendees.forEach((e, index) => {
         const user = e.user;
 
-        if (user._id == currUser._id) {
+        if (user._id === currUser._id) {
           rsvped = true;
           curr_user_attending_id = e._id;
         }
@@ -369,9 +369,12 @@ class Event extends React.Component {
   }
 
   onLocationSelect = (suggest) => {
-    const { newEventLocation, newEventCoordinates } = this.state;
-    newEventLocation = suggest.label;
-    newEventCoordinates = [suggest.location.lng, suggest.location.lat];
+    if(suggest) {
+      this.setState({
+        newEventLocation: suggest.label,
+        newEventCoordinates: [suggest.location.lng, suggest.location.lat]
+      });
+    }
   }
 
   render() {

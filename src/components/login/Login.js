@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
-import {addUser, login} from "../../api/users";
+import {addUser, login, getCurrentUser} from "../../api/users";
 import '../../styles/login.css';
 import Alert from "react-bootstrap/Alert";
 
@@ -20,6 +20,13 @@ class Login extends React.Component {
     username: null,
     loading: false,
     error: null,
+  }
+
+  async componentDidMount(){
+    const currUser = await getCurrentUser();
+    if(currUser){
+      this.props.history.push("/home");
+    }
   }
 
   handleSubmit = (e) => {

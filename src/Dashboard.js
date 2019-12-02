@@ -42,7 +42,7 @@ class Dashboard extends Component {
                     <div/>
                     :  
                     <div id="app-main" className="app-main h-100 w-100">
-                        <div style={{height: "12vh"}}>
+                        <div>
                             <Header history={this.props.history}/>
                         </div>
                         <div style={{height: "88vh"}}>

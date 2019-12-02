@@ -51,7 +51,7 @@ class Home extends React.Component {
             <h3>
               <Link id='eventTitle' to={`/event/${event._id}`}>{event.title}</Link>
             </h3>
-            <h5>{event.date}</h5>
+            <h5>{(new Date(Date.parse(event.date))).toLocaleString()}</h5>
             <p>{event.description}</p>
           </td>
         </tr>
@@ -140,7 +140,7 @@ class Home extends React.Component {
   handleNewEventSave = () => {
     const { newEvent } = this.state;
     console.log(newEvent)
-    addEvent({ ...newEvent }).then(status => this.getAllEvents());
+    addEvent(newEvent).then(status => this.getAllEvents());
     this.setState({ openNewEventForm: false });
   }
 
@@ -164,12 +164,15 @@ class Home extends React.Component {
 
   onLocationSelect = (suggest) => {
     const { newEvent } = this.state;
-    newEvent.location = suggest.label;
-    newEvent.coordinates = [suggest.location.lng, suggest.location.lat];
+    if(suggest){
+      newEvent.location = suggest.label;
+      newEvent.coordinates = [suggest.location.lng, suggest.location.lat];
+    }
   }
 
   render() {
-    const { showEvents, openNewEventForm } = this.state;
+    const { showEvents, openNewEventForm, events} = this.state;
+
     return (
       <React.Fragment>
         <Modal show={openNewEventForm} onHide={this.handleNewEventClose}>
@@ -186,14 +189,14 @@ class Home extends React.Component {
                 </Button>
           </Modal.Footer>
         </Modal>
-        <Container fluid className="h-100 w-100">
+        <Container fluid>
           <Row>
             <Col sm={4}>
-              <div>
+              <div style={{overflowY: "scroll", height:"100vh"}}>
                 <Button
                   onClick={this.handleEventToggle}
                 >Show Events</Button>
-                <div>
+                <div >
                   {showEvents && this.getEventTable()}
                 </div>
               </div>
@@ -206,7 +209,7 @@ class Home extends React.Component {
                 onClick={this.handleAddNewEvent}
                 >Add Event</Button>
               <div>
-                <Map/>
+                <Map events={events}/>
               </div>
             </Col>
           </Row>
