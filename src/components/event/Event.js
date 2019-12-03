@@ -436,9 +436,11 @@ class Event extends React.Component {
           {      
             attendees.map((attending, index) => 
               <Col key={`attending_${index}`} md={1}>
-                <ProfilePicture src={attending.user.avatar} id="userProfileSmallPic" />
+                <a href={`/profile/${attending.user._id}`}>
+                  <ProfilePicture src={attending.user.avatar} id="userProfileSmallPic" />
+                </a>
                 <p>
-                  <Link id='userProfileName' to='/profile'>{attending.user.user_name}</Link>
+                  <Link id='userProfileName' to={`/profile/${attending.user._id}`}>{attending.user.user_name}</Link>
                 </p>
               </Col>
             )
