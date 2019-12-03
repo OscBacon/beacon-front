@@ -41,15 +41,16 @@ export default class Header extends React.Component {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto mr-3">
+                        
+                    </Nav>
+                    <Nav className='align-items-center'>
                         {admin &&
-                            <Link to={"/admin"}>
+                            <Link className="mr-2" to={"/admin"}>
                                 <Button>
                                     Admin
                                 </Button>
                             </Link>
                         }
-                    </Nav>
-                    <Nav className='align-items-center'>
                         {(user && !admin) &&
                             <h5 className="mb-0 mr-2"> Hello, {user.first_name} </h5>
                         }
@@ -58,7 +59,7 @@ export default class Header extends React.Component {
                         </Button>
                         <Link to="/profile/me">
                             <ProfilePicture
-                                src={user.image} id="userProfileSmallPic" roundedCircle
+                                src={user.avatar} id="userProfileSmallPic" roundedCircle
                             />
                         </Link>
                     </Nav>

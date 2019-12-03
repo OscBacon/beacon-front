@@ -25,6 +25,8 @@ class Profile extends React.Component {
     firstName: null,
     lastName: null,
     picturePath: null,
+    editable: false,
+    currentUser: null,
 
     newUsername: null,
     newFirstName: null,
@@ -40,15 +42,17 @@ class Profile extends React.Component {
   };
 
   componentDidMount() {
-    this.getProfile();
+    getCurrentUser().then((user) => {
+      this.setState({currentUser: user}, this.getProfile)
+    })
   }
-  
+
   componentDidUpdate(prevProps){
     if(this.props.match.params.id !== prevProps.match.params.id){
       this.getProfile();
     }
   }
-
+  
   async getProfile() {
     const user = await this.reloadUser();
 
@@ -64,22 +68,21 @@ class Profile extends React.Component {
   }
 
   async reloadUser(){
-    const id = this.props.match.params.id;
-    const newState = {};
+    let id = this.props.match.params.id;
+    const {admin} = this.props;
+    const {currentUser} = this.state;
 
-    let userPromise;
-    if (id === "me") {
-      userPromise = getCurrentUser();
-      newState.me = true;
-    } else {
-      userPromise = getUser(id);
+    let editable = false
+    if(id === "me"){
+      id = currentUser._id;
     }
-
-    return userPromise.then((user) => {
-      if(id === user._id){
-        newState.me = true;
-      }
-      return Object.assign(newState, {
+    if (id === currentUser._id || admin) {
+      editable = true;
+    }
+    
+    return getUser(id).then((user) => {
+      return  {
+        editable,
         user: user,
         id: user._id,
         username: user.user_name,
@@ -89,11 +92,11 @@ class Profile extends React.Component {
         newUsername: user.user_name,
         newFirstName: user.first_name,
         newLastName: user.last_name,
-      })
+      }
     }).catch((error) => {
-      return null;
+      console.error(error.message);
     });
-  } 
+  }
 
   getUserEvents() {
     return getAttendingByUser(this.state.id).then((attendings) => {
@@ -118,17 +121,13 @@ class Profile extends React.Component {
       pastEventTemplate.push(
         <tr key={`event_${index}`}>
           <th>{(new Date(Date.parse(attending.event.date))).toLocaleString()}</th>
-          <th>{attending.event.title}</th>
+          <th>{<Link to={`/event/${attending.event._id}`}>{attending.event.title}</Link>}</th>
           <th>{attending.event.description}</th>
           <th> <Link id='currEvent' to={`/profile/${attending.event.created_by}`}>{attending.event.created_by}</Link></th>
         </tr>
       )
     })
     return pastEventTemplate
-  }
-
-  handleAddFriend() {
-
   }
 
   toggleEditProfile = () => {
@@ -218,13 +217,15 @@ class Profile extends React.Component {
     const new_user = { ...user };
     new_user.avatar = newPicturePath
 
-    updateUser(id, new_user).then(this.getProfile());
-    this.setState({
-      picturePath: newPicturePath,
-      newPicturePath: null,
-      newProfilePicture: null
-    })
-    return this.toggleEditPicture()
+    updateUser(id, new_user).then((result) => {
+      this.reloadUser().then((reloaded) => {
+        this.setState(
+          Object.assign(reloaded, {
+            newPicturePath: null,
+            newProfilePicture: null
+          }), this.toggleEditPicture)  
+      })
+    });
   };
 
   cancelEditPicture = () => {
@@ -294,11 +295,6 @@ class Profile extends React.Component {
     )
   }
 
-  getAddFriendButton() {
-    return (
-      <Button size='sm' variant='outline-primary'><FontAwesomeIcon icon={faPlus} /> Add Friend</Button>
-    );
-  }
 
   getEditProfileButton() {
     return (
@@ -307,8 +303,8 @@ class Profile extends React.Component {
   }
 
   getProfilePicture() {
-    const { me, picturePath } = this.state;
-    if (me === true) {
+    const { editable, picturePath } = this.state;
+    if (editable) {
       return (
         <div id='profilePictureDiv'>
           <div
@@ -329,7 +325,7 @@ class Profile extends React.Component {
 
 
   render() {
-    const { me, username, firstName, lastName, picturePath, events } = this.state;
+    const { editable, username, firstName, lastName, picturePath, events } = this.state;
     return (
       <div>
         <Container>
@@ -337,12 +333,12 @@ class Profile extends React.Component {
             <Col xs={3} id='profile-info'>
               {this.getProfilePicture()}
               <h2><FontAwesomeIcon icon={faUser} /> {username}</h2>
-              {me ? this.getEditProfileButton() : this.getAddFriendButton()}
+              {editable && this.getEditProfileButton()}
             </Col>
             <Col>
               <h1>{firstName} {lastName}</h1>
               <div>
-                {me ? "My Current Events" : "Current Events:"}
+                {editable ? "My Current Events" : "Current Events:"}
               </div>
               {
                 events.map((event, index) => 

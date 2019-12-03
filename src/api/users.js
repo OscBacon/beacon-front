@@ -107,14 +107,14 @@ export const getCurrentUser = () => {
         });
 };
 
-export const login = (email, password) => {
+export const login = (username, password) => {
     const url = "/auth/login";
 
     // Create our request constructor with all the parameters we need
     const request = new Request(domain_url + url, {
         method: "post",
         body: JSON.stringify({
-            email,
+            username,
             password
         }),
         credentials: 'include',

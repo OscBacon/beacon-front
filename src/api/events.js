@@ -89,11 +89,9 @@ export const addEvent = (event) => {
   // Send the request with fetch()
   return fetch(request)
     .then(function (res) {
-      if (res.status === 200) {
-        return true
-      } else {
-        return false
-      }
+      return res.json();
+    }).then((json) => {
+      return json;
     })
     .catch(error => {
       console.log(error);

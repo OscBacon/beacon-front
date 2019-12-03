@@ -103,6 +103,15 @@ class Home extends React.Component {
     );
   }
 
+  dateToISOLocal(date) {
+    const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+    const msLocal =  date.getTime() - offsetMs;
+    const dateLocal = new Date(msLocal);
+    const iso = dateLocal.toISOString();
+    const isoLocal = iso.slice(0, 19);
+    return isoLocal;
+  }
+
   getNewEventForm() {
 
     const { newEvent } = this.state;
@@ -122,7 +131,7 @@ class Home extends React.Component {
             id="datetime-local"
             label="Date"
             type="datetime-local"
-            defaultValue={(new Date(Date.now())).toISOString().slice(0, -8)}
+            defaultValue={this.dateToISOLocal(new Date()).slice(0, 16)}
             InputLabelProps={{
               shrink: true,
             }}
@@ -169,7 +178,9 @@ class Home extends React.Component {
     this.setState({ showEvents: !showEvents });
   }
   handleAddNewEvent = () => {
-    this.setState({ openNewEventForm: true });
+    const {newEvent } = this.state;
+    newEvent.date = (new Date()).toISOString();
+    this.setState({ openNewEventForm: true, newEvent});
   }
 
   handleNewEventClose = () => {
@@ -188,7 +199,12 @@ class Home extends React.Component {
   handleNewEventSave = () => {
     const { newEvent } = this.state;
     console.log(newEvent)
-    addEvent(newEvent).then(status => this.getAllEvents());
+    addEvent(newEvent).then(result => {
+      if(result.errors){
+        alert(result.message)
+      }
+      this.getAllEvents()
+    });
     this.handleNewEventClose();
   }
 

@@ -19,7 +19,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import Geosuggest from 'react-geosuggest';
 import ProfilePicture from '../shared/ProfilePicture';
 
-const defaultPicture = 'https://images.thestar.com/4gFaeXg3ePSLCMRhrwQyeBCLZ5U=/1086x748/smart/filters:cb(1569881885267)/https://www.thestar.com/content/dam/thestar/news/gta/2019/09/30/safety-barriers-installed-at-bahen-centre-after-student-death-u-of-t-says/rm_suicide_01.jpg';
+const defaultPicture = 'https://cdn.mindful.org/party.png?q=80&fm=jpg&fit=crop&w=1400&h=875';
 
 class Event extends React.Component {
   state = {
@@ -30,6 +30,7 @@ class Event extends React.Component {
     discussions: [],
     rsvped: false,
     currUser: {},
+    editable: false,
 
     showEditEvent: false,
     newEventTitle: "",
@@ -49,10 +50,14 @@ class Event extends React.Component {
   }
 
   async fetch() {
-    
+    const {admin} = this.props;
+
     const currUser = await getCurrentUser();
     const user = {currUser};
     const event = await this.reloadEvent();
+
+    const editable = (admin || (currUser._id === event.event.created_by._id))
+    user.editable = editable;
     
     this.setState(Object.assign(user, event), this.fetchRest)
   
@@ -67,6 +72,7 @@ class Event extends React.Component {
   async reloadEvent(){
     const id = this.props.match.params.id;
     const event = await getEvent(id);
+    
 
     return {
       event: event,
@@ -339,9 +345,9 @@ class Event extends React.Component {
   }
 
   getEventPicture = () => {
-    const { currUser, picturePath, event } = this.state;
+    const { currUser, picturePath, event, editable} = this.state;
 
-    if (event.created_by && currUser._id === event.created_by._id) { // created by current user
+    if (editable) {
       return (
         <div id="eventPictureDiv">
           <div
@@ -385,9 +391,8 @@ class Event extends React.Component {
   }
 
   render() {
-    const { event, openRsvpNotif, attendees, discussions, rsvped, currUser } = this.state;
-
-    const createdByCurrUser = event.created_by ? currUser._id === event.created_by._id : false;
+    const { event, openRsvpNotif, attendees, discussions, rsvped, editable } = this.state;
+    const {admin} = this.props;
 
     return (
       <div>
@@ -407,7 +412,7 @@ class Event extends React.Component {
               <h4>{event.title}</h4>
             </Col>
             <Col>
-              {createdByCurrUser ? this.getEditEventButton() : this.getRSVPButton()}
+              {editable ? this.getEditEventButton() : this.getRSVPButton()}
             </Col>
           </Row>
           <h5>{event.location}</h5>
@@ -443,12 +448,11 @@ class Event extends React.Component {
             <h5>Discussions</h5>
           </Row>
           <Row id="textAlignedCentre" >
-            <div>
-              <Table bordered hover>
+              <Table bordered hover className="w-75">
                 <tbody>
                   {
                     discussions.map((comment, index) => 
-                      <tr key={`comment_${index}`}>
+                      <tr key={`comment_${index}`} style={{borderColor: comment.author.user_name === "admin" ? "white" : "grey"}}>
                         <td>
                           <ProfilePicture src={comment.author.avatar} id="userProfileSmallPic"/>
                           <p>
@@ -463,7 +467,6 @@ class Event extends React.Component {
                   }
                 </tbody>
               </Table>
-            </div >
           </Row>
           <Row>
             <form onSubmit={this.handleSubmit}>

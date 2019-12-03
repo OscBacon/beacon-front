@@ -26,7 +26,7 @@ class Dashboard extends Component {
             const current = await getCurrentUser();
             console.log("Logged on", current);
             const newState = {authenticated: true}
-            if(current.email === "admin@beacon.ca"){
+            if(current.user_name === "admin"){
                 newState.admin = true;
             }
             this.setState(newState);

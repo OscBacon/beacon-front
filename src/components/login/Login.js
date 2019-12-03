@@ -58,9 +58,9 @@ class Login extends React.Component {
   };
 
   authenticate = () => {
-    const { email, password } = this.state;
+    const { username, password } = this.state;
 
-    login(email, password).then((data) => {
+    login(username, password).then((data) => {
       const newState = {loading: false};
       console.log(data);
       if(data.error){
@@ -92,8 +92,8 @@ class Login extends React.Component {
         <h2>Log In</h2>
         <Form onSubmit={this.handleSubmit}>
           <Form.Group controlId='formBasicEmail'>
-            <Form.Label>Email address</Form.Label>
-            <Form.Control placeholder='Enter email' onChange={(e) => this.handleInputChange(e, "email")} />
+            <Form.Label>Username</Form.Label>
+            <Form.Control placeholder='Enter username' onChange={(e) => this.handleInputChange(e, "username")} />
           </Form.Group>
 
           <Form.Group controlId='formBasicPassword'>
