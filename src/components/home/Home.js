@@ -111,16 +111,13 @@ class Home extends React.Component {
     const { newEvent } = this.state;
 
     return (
-      <div>
-        <Row>
+      <React.Fragment>
           <TextField
             label="Title"
             margin="normal"
             variant="filled"
             onInput={this.inputEventTitle}
           />
-        </Row>
-        <Row>
           <TextField
             id="datetime-local"
             label="Date"
@@ -133,24 +130,18 @@ class Home extends React.Component {
             }}
             onInput={this.inputEventDate}
           />
-        </Row>
-        <Row>
           <Geosuggest
             label="Location"
             className="MuiInputBase-root MuiFilledInput-root MuiFilledInput-underline MuiInputBase-formControl"
             inputClassName="MuiInputBase-input MuiFilledInput-input"
             onSuggestSelect={this.onLocationSelect}
           />
-        </Row>
-        <Row>
           <TextField
             label="Description"
             margin="normal"
             variant="filled"
             onInput={this.inputEventDescription}
           />
-        </Row>
-        <Row>
           <Dropzone
             onDrop={this.handleDrop}
           >
@@ -164,8 +155,7 @@ class Home extends React.Component {
             )}
           </Dropzone>
           {newEvent.image && this.getNewEventPicture()}
-        </Row>
-      </div>
+      </React.Fragment>
     );
   }
 
