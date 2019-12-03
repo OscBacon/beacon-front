@@ -1,4 +1,4 @@
-const domain_url = "http://localhost:3002"
+const domain_url = process.env.REACT_APP_BACKEND_URL || "http://localhost:3002"
 
 const global_options = {
   credentials: 'include',
@@ -18,7 +18,7 @@ export const getAttendings = () => {
       if (res.status === 200) {
         return res.json();
       } else {
-        alert("Could not get events");
+        alert("Could not get attendings");
       }
     })
     .then(json => {
@@ -41,11 +41,11 @@ export const getAttendingByUser = (user_id) => {
       if (res.status === 200) {
         return res.json();
       } else {
-        alert("Could not get the event");
+        alert("Could not get the attendings");
       }
     })
     .catch(error => {
-      console.log("failed to get the event")
+      console.log("failed to get the attendings")
       console.log(error);
     });
 };
@@ -60,11 +60,11 @@ export const getAttendingByEvent = (event_id) => {
         if (res.status === 200) {
           return res.json();
         } else {
-          alert("Could not get the event");
+          alert("Could not get the attendings");
         }
       })
       .catch(error => {
-        console.log("failed to get the event")
+        console.log("failed to get the attendings")
         console.log(error);
       });
   };
