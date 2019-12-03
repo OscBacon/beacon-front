@@ -8,7 +8,7 @@ import Image from 'react-bootstrap/Image';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Link } from "react-router-dom";
-import { getEvent, updateEvent } from "../../api/events";
+import { getEvent, updateEvent, deleteEvent } from "../../api/events";
 import { getCurrentUser } from "../../api/users";
 import { getAttendingByEvent, addAttending, deleteAttending } from "../../api/attending"
 import {getComments, addComment} from '../../api/comments'
@@ -25,6 +25,7 @@ class Event extends React.Component {
   state = {
     event: {},
     openRsvpNotif: false,
+    deleteEvent: false,
     comment: '',
     attendees: [],
     discussions: [],
@@ -139,6 +140,10 @@ class Event extends React.Component {
 
   handleRsvpClose = (event) => {
     this.setState({ openRsvpNotif: false });
+  }
+
+  handleDeleteClose = () => {
+    this.setState({deleteEventModal: false})
   }
 
   handleChange = (event) => {
@@ -390,8 +395,19 @@ class Event extends React.Component {
     }
   }
 
+  handleDelete = () => {
+    const {event} = this.state;
+    if(event._id){
+      deleteEvent(event._id).then((success) => {
+        if(success){
+          this.props.history.push("/home");
+        }
+      })
+    }
+  }
+
   render() {
-    const { event, openRsvpNotif, attendees, discussions, rsvped, editable } = this.state;
+    const { event, openRsvpNotif, deleteEventModal, attendees, discussions, rsvped, editable } = this.state;
     const {admin} = this.props;
 
     return (
@@ -406,13 +422,31 @@ class Event extends React.Component {
               </Button>
           </Modal.Footer>
         </Modal>
+        <Modal show={deleteEventModal} onHide={this.handleDeleteClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>{"Are you sure you want to delete this event?"}</Modal.Title>
+          </Modal.Header>
+          <Modal.Footer>
+            <Button variant="primary" onClick={this.handleDeleteClose}>
+              Cancel
+              </Button>
+            <Button variant="primary" onClick={this.handleDelete}>
+              Okay
+            </Button>
+          </Modal.Footer>
+        </Modal>
         <Container>
           <Row>
             <Col sm={4}>
               <h4>{event.title}</h4>
             </Col>
-            <Col>
+            <Col sm={2}>
               {editable ? this.getEditEventButton() : this.getRSVPButton()}
+            </Col>
+            <Col sm={1}>
+              {editable && <Button variant="danger" onClick={() => this.setState({deleteEventModal: true})}>
+                Delete
+              </Button>}
             </Col>
           </Row>
           <h5>{event.location}</h5>

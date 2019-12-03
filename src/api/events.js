@@ -129,3 +129,32 @@ export const updateEvent = (event_id, event) => {
     });
 };
 
+
+export const deleteEvent = (event_id) => {
+  // the URL for the request
+  const url = `/events/${event_id}`;
+  // Create our request constructor with all the parameters we need
+  const request = new Request(domain_url + url, {
+    method: 'DELETE',
+    credentials: "include",
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      credentials: 'include',
+      "Content-Type": "application/json",
+      mode: 'cors'
+    }
+  });
+
+  // Send the request with fetch()
+  return fetch(request)
+    .then(function (res) {
+      if (res.status === 200) {
+        return true
+      } else {
+        return false
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
