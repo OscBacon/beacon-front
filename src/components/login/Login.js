@@ -68,7 +68,7 @@ class Login extends React.Component {
         return this.setState(newState);
       }
       this.setState(newState, () => {
-        this.props.history.push('/dashboard');
+        this.props.history.push('/home');
       });
 
     }).catch((error) => {

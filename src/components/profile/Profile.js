@@ -76,6 +76,9 @@ class Profile extends React.Component {
     }
 
     return userPromise.then((user) => {
+      if(id === user._id){
+        newState.me = true;
+      }
       return Object.assign(newState, {
         user: user,
         id: user._id,

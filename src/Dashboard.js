@@ -16,7 +16,8 @@ class Dashboard extends Component {
     constructor(props){
         super(props);
         this.state = {
-            authenticated: false
+            authenticated: false,
+            admin: false,
         }
     }
 
@@ -24,7 +25,11 @@ class Dashboard extends Component {
         try{
             const current = await getCurrentUser();
             console.log("Logged on", current);
-            this.setState({authenticated: true});
+            const newState = {authenticated: true}
+            if(current.email === "admin@beacon.ca"){
+                newState.admin = true;
+            }
+            this.setState(newState);
         }
         catch(e){
             console.log("Not Logged On");
@@ -35,7 +40,7 @@ class Dashboard extends Component {
     }
 
     render() {
-        const {authenticated} = this.state;
+        const {authenticated, admin} = this.state;
         
         return (
             <Fragment>
@@ -44,20 +49,22 @@ class Dashboard extends Component {
                     :  
                     <div id="app-main" className="app-main h-100 w-100">
                         <div>
-                            <Header history={this.props.history}/>
+                            <Header admin={admin} history={this.props.history}/>
                         </div>
                         <div style={{height: "88vh"}}>
                             <Switch>
-                                <Route path='/home' component={Home} />
-                                <Route path='/event/:id' component={Event} />
-                                <Route path='/profile/:id' component={Profile} />
-                                <Route path='/admin' component={Admin} />
-                                {window.isAdmin ?
-                                    <Route path='/' component={Admin} />
-                                    :
-                                    <Route path='/' component={Home} />
-                                }
-
+                                <Route path='/home' 
+                                    render={(props) => <Home {...props} admin={admin} />}
+                                />
+                                <Route path='/event/:id' 
+                                    render={(props) => <Event {...props} admin={admin} />}
+                                />
+                                <Route path='/profile/:id' 
+                                    render={(props) => <Profile {...props} admin={admin} />}
+                                />
+                                <Route path='/admin' 
+                                    render={(props) => <Admin {...props} admin={admin} />}
+                                />
                             </Switch>
                         </div>
                     </div>

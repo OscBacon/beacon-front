@@ -29,6 +29,7 @@ export default class Header extends React.Component {
 
     render() {
         const {user} = this.state;
+        const {admin} = this.props;
 
         if(!user){
             return  <Navbar bg="light" expand="lg" className="mb-3"/>
@@ -40,16 +41,16 @@ export default class Header extends React.Component {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ml-auto mr-3">
-                        {window.isAdmin &&
-                        <Link to={"/admin"}>
-                            <Button>
-                                Admin
-                            </Button>
-                        </Link>
+                        {admin &&
+                            <Link to={"/admin"}>
+                                <Button>
+                                    Admin
+                                </Button>
+                            </Link>
                         }
                     </Nav>
                     <Nav className='align-items-center'>
-                        {user &&
+                        {(user && !admin) &&
                             <h5 className="mb-0 mr-2"> Hello, {user.first_name} </h5>
                         }
                         <Button className="mr-3" onClick={this.onLogOut}>
