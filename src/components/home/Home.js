@@ -79,12 +79,6 @@ class Home extends React.Component {
     );
   }
 
-  getMap() {
-    return (
-      <Image src={require('../../static/homePageMap.png')} thumbnail />
-    );
-  }
-
   handleDrop = (acceptedFiles) => {
     const reader = new FileReader();
 
