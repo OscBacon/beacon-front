@@ -125,6 +125,8 @@ class Home extends React.Component {
             id="datetime-local"
             label="Date"
             type="datetime-local"
+            variant="filled"
+            margin="normal"
             defaultValue={this.dateToISOLocal(new Date()).slice(0, 16)}
             InputLabelProps={{
               shrink: true,
