@@ -123,7 +123,7 @@ class Profile extends React.Component {
           <th>{(new Date(Date.parse(attending.event.date))).toLocaleString()}</th>
           <th>{<Link to={`/event/${attending.event._id}`}>{attending.event.title}</Link>}</th>
           <th>{attending.event.description}</th>
-          <th> <Link id='currEvent' to={`/profile/${attending.event.created_by}`}>{attending.event.created_by}</Link></th>
+          <th> <Link id='currEvent' to={`/profile/${attending.event.created_by}`}>{attending.event.created_by.user_name}</Link></th>
         </tr>
       )
     })
