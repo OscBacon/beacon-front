@@ -163,6 +163,8 @@ class Event extends React.Component {
         this.setState(discussions)
       });
     });
+
+    this.setState({ comment: "" });
   }
 
   toggleEditEvent = () => {
